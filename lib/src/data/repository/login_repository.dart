@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:dio/dio.dart';
 
@@ -17,7 +16,7 @@ class LoginRepository {
           body: LoginModel.fromJson(response.data["body"]),
           message: response.data["message"],
           success: response.data["success"]);
-    } on DioException catch (_, e) {
+    } on DioException catch (_) {
       return ResponseBaseModel<LoginModel>.fromJson({});
     }
   }

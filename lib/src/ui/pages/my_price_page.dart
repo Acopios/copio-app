@@ -11,13 +11,11 @@ class MyPricePage extends StatefulWidget {
 }
 
 class _MyPricePageState extends State<MyPricePage> {
-  late Size _size;
   @override
   Widget build(BuildContext context) {
-    _size = MediaQuery.sizeOf(context);
     return SafeArea(
         child: Scaffold(
-      appBar: AppBar(elevation: 8, title: Text("Mis precios")),
+      appBar: AppBar(elevation: 8, title: const Text("Mis precios")),
       body: _body(),
     ));
   }
@@ -53,12 +51,12 @@ class _MyPricePageState extends State<MyPricePage> {
               color: Colors.green,
             ),
             title: const Text("Material "),
-            subtitle: Text("\$0.0"),
+            subtitle: const Text("\$0.0"),
             trailing: TextButton(
                 onPressed: () {
                   _dialog();
                 },
-                child: Text("Dar precio")),
+                child: const Text("Dar precio")),
           ),
         ),
       );

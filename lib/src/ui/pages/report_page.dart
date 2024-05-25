@@ -13,11 +13,9 @@ class ReportPage extends StatefulWidget {
 }
 
 class _ReportPageState extends State<ReportPage> {
-  late Size _size;
 
   @override
   Widget build(BuildContext context) {
-    _size = MediaQuery.sizeOf(context);
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
@@ -61,12 +59,12 @@ class _ReportPageState extends State<ReportPage> {
               color: Colors.green,
             ),
             title: const Text("Material "),
-            subtitle: Text("\$0.0"),
+            subtitle: const Text("\$0.0"),
             trailing: TextButton(
                 onPressed: () {
                   _dialog();
                 },
-                child: Text("Dar precio")),
+                child: const Text("Dar precio")),
           ),
         ),
       );

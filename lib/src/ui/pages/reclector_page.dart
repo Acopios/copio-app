@@ -20,7 +20,7 @@ class _RecolectorPagStateState extends State<RecolectorPagState> {
       child: Scaffold(
         appBar: AppBar(
           elevation: 8,
-          title: Text("Crear recolector"),
+          title: const Text("Crear recolector"),
         ),
         body: _body(),
       ),
