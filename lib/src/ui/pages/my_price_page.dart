@@ -1,7 +1,10 @@
+import 'package:acopios/src/data/model/material_model.dart';
+import 'package:acopios/src/ui/blocs/material/material_cubit.dart';
 import 'package:acopios/src/ui/helpers/dialog_helper.dart';
 import 'package:acopios/src/ui/widgets/btn_widget.dart';
 import 'package:acopios/src/ui/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MyPricePage extends StatefulWidget {
   const MyPricePage({super.key});
@@ -11,13 +14,32 @@ class MyPricePage extends StatefulWidget {
 }
 
 class _MyPricePageState extends State<MyPricePage> {
+  late MaterialCubit _cubit;
+
+  late Future<List<MaterialCustom>> _future;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _cubit = MaterialCubit();
+    _init();
+  }
+
+  _init() {
+    _future = _cubit.obtenerMateriales();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-      appBar: AppBar(elevation: 8, title: const Text("Mis precios")),
-      body: _body(),
-    ));
+    return BlocProvider(
+      create: (context) => _cubit,
+      child: SafeArea(
+          child: Scaffold(
+        appBar: AppBar(elevation: 8, title: const Text("Mis precios")),
+        body: _body(),
+      )),
+    );
   }
 
   Widget _body() => Padding(
@@ -39,10 +61,19 @@ class _MyPricePageState extends State<MyPricePage> {
       onChanged: (e) {});
 
   Widget _listCard() => Expanded(
-          child: ListView(
-        children: List.generate(8, (index) => _card()),
-      ));
-  Widget _card() => Card(
+      child: FutureBuilder<List<MaterialCustom>>(
+          future: _future,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator.adaptive());
+            }
+            final list = snapshot.data!;
+            return ListView(
+              children:
+                  List.generate(list.length, (index) => _card(list[index])),
+            );
+          }));
+  Widget _card(MaterialCustom m) => Card(
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: ListTile(
@@ -50,8 +81,8 @@ class _MyPricePageState extends State<MyPricePage> {
               Icons.recycling_outlined,
               color: Colors.green,
             ),
-            title: const Text("Material "),
-            subtitle: const Text("\$0.0"),
+            title: Text(m.name),
+            subtitle: Text("\$ ${m.valor}"),
             trailing: TextButton(
                 onPressed: () {
                   _dialog();
@@ -78,7 +109,6 @@ class _MyPricePageState extends State<MyPricePage> {
           const SizedBox(height: 10),
           BtnWidget(action: () {}, txt: "Agregar ", enabled: false),
           const SizedBox(height: 10),
-
         ],
       ));
 }
