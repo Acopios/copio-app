@@ -1,5 +1,6 @@
-import 'package:acopios/src/ui/pages/auth/login/login_page.dart';
 import 'package:flutter/material.dart';
+
+import 'src/ui/pages/login_page.dart';
 
 void main() => runApp(const MyApp());
 
