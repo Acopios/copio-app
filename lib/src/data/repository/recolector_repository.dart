@@ -3,6 +3,7 @@ import 'package:acopios/src/data/model/recolector_model.dart';
 import 'package:dio/dio.dart';
 
 import '../../core/url.dart';
+import '../dto/recolector_dto.dart';
 import '../model/response_base_model.dart';
 
 class RecolectorRepo {
@@ -24,6 +25,21 @@ class RecolectorRepo {
           success: response.data["success"]);
     } on DioException catch (_) {
       return ResponseBaseModel<List<RecolectorModel>>.fromJson({});
+    }
+  }
+
+  Future<bool> crearRecolector(RecolectorDto dto) async {
+    try {
+      const url = "$urlBase/usuario/crear-recolector";
+      final response = await Dio().post(url,
+          data: dto.toJson(),
+          options: Options(headers: {
+            "AUTHORIZATION":
+                "Bearer ${await SharedPreferencesManager("token").load()}"
+          }));
+      return response.data["success"];
+    } on DioException catch (_) {
+      return false;
     }
   }
 }
