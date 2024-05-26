@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:acopios/src/data/dto/asignar_precio_dto.dart';
 import 'package:acopios/src/data/model/material_model.dart';
 import 'package:acopios/src/data/model/precio_material.dart';
 import 'package:dio/dio.dart';
@@ -45,6 +48,24 @@ class MaterialRepo {
           success: response.data["success"]);
     } on DioException catch (_) {
       return ResponseBaseModel<List<PrecioMaterial>>.fromJson({});
+    }
+  }
+
+  Future<bool> asignarPreci({required AsignarPrecioDto dto}) async {
+    try {
+      const url = "$urlBase/precio/asignar";
+
+      log("${dto.toJson()}");
+      final response = await Dio().post(url,
+          data: dto.toJson(),
+          options: Options(headers: {
+            "AUTHORIZATION":
+                "Bearer ${await SharedPreferencesManager("token").load()}"
+          }));
+
+      return response.data["success"];
+    } catch (e) {
+      return false;
     }
   }
 }

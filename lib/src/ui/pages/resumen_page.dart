@@ -1,10 +1,21 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:acopios/src/data/model/recolector_model.dart';
+import 'package:acopios/src/ui/blocs/compra/compra_cubit.dart';
 import 'package:acopios/src/ui/pages/home_page.dart';
 import 'package:acopios/src/ui/widgets/btn_widget.dart';
+import 'package:acopios/src/ui/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 
 class ResumenPage extends StatefulWidget {
   final bool isDetalle;
-  const ResumenPage({super.key, required this.isDetalle});
+  final List<Map<String, dynamic>>? data;
+  final RecolectorModel recolectorModel;
+  const ResumenPage(
+      {super.key,
+      required this.isDetalle,
+      this.data,
+      required this.recolectorModel});
 
   @override
   State<ResumenPage> createState() => _ResumenPagState();
@@ -12,6 +23,29 @@ class ResumenPage extends StatefulWidget {
 
 class _ResumenPagState extends State<ResumenPage> {
   late Size _size;
+  double totalKilos = 0;
+  double valorPagar = 0;
+  double valor = 0;
+  final _compraC = CompraCubit();
+
+  Map<String, double> calcularTotales() {
+    for (var item in widget.data!) {
+      totalKilos += item["cantidad"];
+      valorPagar += item["total"];
+      if(!widget.isDetalle){
+        valor += item["valor"] * item["cantidad"];
+      }
+    }
+
+    return {"totalKilos": totalKilos, "valorPagar": valorPagar};
+  }
+
+  bool loading = false;
+  @override
+  void initState() {
+    super.initState();
+    calcularTotales();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +56,12 @@ class _ResumenPagState extends State<ResumenPage> {
         elevation: 8,
         title: const Text("Resumen"),
       ),
-      body: _body(),
+      body: Stack(
+        children: [
+          _body(),
+          Visibility(visible: loading, child: const LoadingWidget())
+        ],
+      ),
     ));
   }
 
@@ -35,17 +74,19 @@ class _ResumenPagState extends State<ResumenPage> {
             ),
             SizedBox(
               width: _size.width,
-              child: const Card(
+              child: Card(
                 child: Padding(
                   padding: EdgeInsets.all(8),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Recolector: Juan Perez"),
-                      Text("Kilos ingresados: 12KG"),
-                      Text("Valor a pagar: 12.000"),
-                      Text("Ganancia obtenida: 12.000"),
+                      Text("Recolector: ${widget.recolectorModel.nombres}"),
+                      Text("Kilos ingresados: $totalKilos"),
+                      Text("Valor a pagar: $valorPagar"),
+                      Visibility(
+                        visible:!widget.isDetalle,
+                        child: Text("Ganancia obtenida: ${valor - valorPagar}")),
                     ],
                   ),
                 ),
@@ -58,16 +99,17 @@ class _ResumenPagState extends State<ResumenPage> {
             Expanded(
                 child: ListView(
               children: List.generate(
-                  10,
+                  widget.data!.length,
                   (index) => Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           _row(
-                              txt1: "Material $index",
-                              txt2: "2",
-                              txt3: "300",
-                              txt4: "600"),
+                              txt1: widget.data![index]["material"].toString(),
+                              txt2: widget.data![index]["cantidad"].toString(),
+                              txt3: widget.data![index]["precioUnidad"]
+                                  .toString(),
+                              txt4: widget.data![index]["total"].toString()),
                           const Divider()
                         ],
                       )),
@@ -78,11 +120,20 @@ class _ResumenPagState extends State<ResumenPage> {
             widget.isDetalle
                 ? const SizedBox()
                 : BtnWidget(
-                    action: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (_) => const HomePage()),
-                          (route) => false);
+                    action: () async {
+                      setState(() {
+                        loading = true;
+                      });
+                      final r = await _compraC.realizarCompra(widget.data!);
+                      if (r) {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (_) => const HomePage()),
+                            (route) => false);
+                      }
+                      setState(() {
+                        loading = false;
+                      });
                     },
                     txt: "Finalizar",
                     enabled: true),

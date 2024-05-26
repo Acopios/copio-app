@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 part of 'recolector_cubit.dart';
 
 class RecolectorState extends Equatable {

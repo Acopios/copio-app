@@ -1,5 +1,7 @@
+import 'package:acopios/src/core/shared_preferences.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
 import 'package:acopios/src/ui/blocs/home/home_cubit.dart';
+import 'package:acopios/src/ui/pages/login_page.dart';
 import 'package:acopios/src/ui/pages/movimientos_page.dart';
 import 'package:acopios/src/ui/pages/my_price_page.dart';
 import 'package:acopios/src/ui/pages/reclector_page.dart';
@@ -87,10 +89,14 @@ class _HomePageState extends State<HomePage> {
             subtitle: Text(r.apellidos!),
             trailing: TextButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const ReportPage()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => ReportPage(
+                                recolectorModel: r,
+                              )));
                 },
-                child: const Text("A reportar")),
+                child: const Text("Comprar")),
           ),
         ),
       );
@@ -123,7 +129,15 @@ class _HomePageState extends State<HomePage> {
         speedDialWidget(
           Icons.exit_to_app,
           'Cerrar sesión',
-          () {},
+          () async {
+            await SharedPreferencesManager("token").remove();
+            await SharedPreferencesManager("id").remove();
+
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => LoginPage()),
+                (route) => false);
+          },
         ),
       ], child: const Icon(Icons.add));
 }

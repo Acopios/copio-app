@@ -110,7 +110,7 @@ class _RecolectorPagStateState extends State<RecolectorPagState> {
                       if (r) {
                         Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (_) => HomePage()),
+                            MaterialPageRoute(builder: (_) => const HomePage()),
                             (route) => false);
                       } else {
                         alert(
