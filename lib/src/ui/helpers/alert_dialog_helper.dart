@@ -5,7 +5,7 @@ alert(BuildContext context, Widget child,
     showDialog(
         context: context,
         builder: (_) => AlertDialog.adaptive(
-              content: Column(
+              content: Column(    mainAxisSize: MainAxisSize.min,
                 children: [child],
               ),
               actions: [

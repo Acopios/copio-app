@@ -6,6 +6,7 @@ import 'package:acopios/src/ui/widgets/chech_widget.dart';
 import 'package:acopios/src/ui/widgets/input_widget.dart';
 import 'package:acopios/src/ui/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/btn_widget.dart';
@@ -63,6 +64,8 @@ class _RegisterpageState extends State<Registerpage> {
             _space(10),
             InputWidget(
                 controller: _registroC.phone,
+                type: TextInputType.number,
+                list: [FilteringTextInputFormatter.digitsOnly],
                 hintText: "Número celular",
                 icon: Icons.phone,
                 onChanged: (e) {

@@ -28,6 +28,7 @@ class MovimientosCubit extends Cubit<MovimientosState> {
     double valorPagado = 0;
 
     for (var i in c) {
+      log("${i.toJson()}");
       kilos += i.cantidad!;
       valorPagado += i.total!;
     }
@@ -42,7 +43,7 @@ class MovimientosCubit extends Cubit<MovimientosState> {
         "idMaterial": i.idMaterial,
         "fechaAlimenta": DateTime.now().toIso8601String(),
         "cantidad": i.cantidad,
-        "precioUnidad": i.total,
+        "precioUnidad": i.precioUnidad,
         "total": i.total!,
         "material": i.idMaterial!.nombre,
       });

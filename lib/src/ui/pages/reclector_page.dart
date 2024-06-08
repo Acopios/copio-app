@@ -6,6 +6,7 @@ import 'package:acopios/src/ui/pages/home_page.dart';
 import 'package:acopios/src/ui/widgets/input_widget.dart';
 import 'package:acopios/src/ui/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/btn_widget.dart';
@@ -80,6 +81,8 @@ class _RecolectorPagStateState extends State<RecolectorPagState> {
             InputWidget(
                 controller: _recolectorCubit.ide,
                 hintText: "Identificacion",
+                list: [FilteringTextInputFormatter.digitsOnly],
+                type: TextInputType.number,
                 icon: Icons.card_travel_sharp,
                 onChanged: (e) {
                   _recolectorCubit.isEnabled();
@@ -96,6 +99,8 @@ class _RecolectorPagStateState extends State<RecolectorPagState> {
             InputWidget(
                 controller: _recolectorCubit.phone,
                 hintText: "Número telefono",
+                   list: [FilteringTextInputFormatter.digitsOnly],
+                type: TextInputType.number,
                 icon: Icons.phone,
                 onChanged: (e) {
                   _recolectorCubit.isEnabled();

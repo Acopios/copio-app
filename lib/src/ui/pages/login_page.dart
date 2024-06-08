@@ -121,6 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                     alert(
                         context,
                         const Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Text("Por favor revisa tus datos de ingreso")
                           ],

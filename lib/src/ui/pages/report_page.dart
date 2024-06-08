@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 
+import 'package:acopios/src/core/utils.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
 import 'package:acopios/src/ui/blocs/compra/compra_cubit.dart';
 import 'package:acopios/src/ui/blocs/material/material_cubit.dart';
@@ -9,6 +10,7 @@ import 'package:acopios/src/ui/helpers/dialog_helper.dart';
 import 'package:acopios/src/ui/pages/resumen_page.dart';
 import 'package:acopios/src/ui/widgets/btn_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/input_widget.dart';
@@ -73,10 +75,17 @@ class _ReportPageState extends State<ReportPage> {
   Widget _listCard() => BlocBuilder<CompraCubit, CompraState>(
         builder: (context, state) {
           final list = state.materiales ?? [];
-          return Expanded(
-              child: ListView(
-            children: List.generate(list.length, (index) => _card(list[index])),
-          ));
+          return list.isEmpty
+              ? Expanded(
+                child: Center(
+                    child: Text("Cargando..."),
+                  ),
+              )
+              : Expanded(
+                  child: ListView(
+                  children:
+                      List.generate(list.length, (index) => _card(list[index])),
+                ));
         },
       );
   Widget _card(MaterialCustom m) => Card(
@@ -91,7 +100,7 @@ class _ReportPageState extends State<ReportPage> {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("\$ ${m.valorCompra}"),
+                Text("\$ ${currencyFormat.format(m.valorCompra.toInt())}"),
                 Text("Cantidad: ${m.cantidad} KG"),
               ],
             ),
@@ -131,6 +140,10 @@ class _ReportPageState extends State<ReportPage> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: InputWidget(
+                type: TextInputType.number,
+                list: [
+                  FilteringTextInputFormatter.digitsOnly
+                ],
                   controller: _compraC.txt,
                   hintText: "0.0",
                   icon: Icons.monetization_on,
@@ -144,6 +157,10 @@ class _ReportPageState extends State<ReportPage> {
               child: InputWidget(
                   controller: _compraC.txtC,
                   hintText: "2kg",
+                   list: [
+                  FilteringTextInputFormatter.digitsOnly
+                ],
+                type: TextInputType.number,
                   icon: Icons.line_weight_rounded,
                   onChanged: (e) {
                     s(() {});

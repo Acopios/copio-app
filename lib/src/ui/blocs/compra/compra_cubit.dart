@@ -21,7 +21,7 @@ class CompraCubit extends Cubit<CompraState> {
   final txtC = TextEditingController();
 
   void obtenerMateriales() async {
-    final list = await _materialC.obtenerMateriales();
+    final list = await _materialC.obtenerMateriales(false);
     emit(state.copyWith(materiales: list));
   }
 

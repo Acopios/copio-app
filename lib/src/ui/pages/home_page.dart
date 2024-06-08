@@ -6,6 +6,7 @@ import 'package:acopios/src/ui/pages/movimientos_page.dart';
 import 'package:acopios/src/ui/pages/my_price_page.dart';
 import 'package:acopios/src/ui/pages/reclector_page.dart';
 import 'package:acopios/src/ui/pages/report_page.dart';
+import 'package:acopios/src/ui/widgets/btn_widget.dart';
 import 'package:acopios/src/ui/widgets/input_widget.dart';
 import 'package:acopios/src/ui/widgets/speed_dial_widget.dart';
 import 'package:flutter/material.dart';
@@ -73,10 +74,32 @@ class _HomePageState extends State<HomePage> {
                 child: CircularProgressIndicator.adaptive(),
               );
             }
-            final list = snapshot.data;
+            final list = snapshot.data ?? [];
+
+            if (list.isEmpty) {
+              return Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.person_outline_outlined, size: 80),
+                    const Text("No cuentas con recolectores aun"),
+                    BtnWidget(
+                        action: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const RecolectorPagState()));
+                        },
+                        txt: "Registrar",
+                        enabled: true),
+                  ],
+                ),
+              );
+            }
             return ListView(
               children:
-                  List.generate(list!.length, (index) => _card(list[index])),
+                  List.generate(list.length, (index) => _card(list[index])),
             );
           }));
 

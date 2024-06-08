@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:acopios/src/data/dto/asignar_precio_dto.dart';
 import 'package:acopios/src/data/model/material_model.dart';
 import 'package:acopios/src/data/model/precio_material.dart';
@@ -33,7 +35,9 @@ class MaterialCubit extends Cubit<MaterialState> {
 
   final txtPrice = TextEditingController();
 
-Future<List<MaterialCustom>> obtenerMateriales() async {
+Future<List<MaterialCustom>> obtenerMateriales(bool enabled) async {
+      emit(state.copyWith(loading: enabled));
+
   List<MaterialCustom> material = [];
   final r = await _material.obtenerMateriales();
   final r2 = await _precioMateriales();
@@ -51,6 +55,7 @@ Future<List<MaterialCustom>> obtenerMateriales() async {
       codigo: i.codigo!,
     ));
   }
+      emit(state.copyWith(loading: false));
 
   return material;
 }
@@ -72,6 +77,7 @@ Future<List<MaterialCustom>> obtenerMateriales() async {
             idMinorista: int.parse(id!),
             fechaAsigna: DateTime.now().toIso8601String(),
             valor: double.parse(txtPrice.text)));
+
     emit(state.copyWith(loading: false));
     txtPrice.clear();
 

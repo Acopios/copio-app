@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:acopios/src/core/utils.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
 import 'package:acopios/src/ui/blocs/compra/compra_cubit.dart';
 import 'package:acopios/src/ui/pages/home_page.dart';
@@ -83,7 +84,7 @@ class _ResumenPagState extends State<ResumenPage> {
                     children: [
                       Text("Recolector: ${widget.recolectorModel.nombres}"),
                       Text("Kilos ingresados: $totalKilos"),
-                      Text("Valor a pagar: $valorPagar"),
+                      Text("Valor a pagar: ${currencyFormat.format(valorPagar.toInt())}"),
                       Visibility(
                         visible:!widget.isDetalle,
                         child: Text("Ganancia obtenida: ${valor - valorPagar}")),
@@ -107,9 +108,9 @@ class _ResumenPagState extends State<ResumenPage> {
                           _row(
                               txt1: widget.data![index]["material"].toString(),
                               txt2: widget.data![index]["cantidad"].toString(),
-                              txt3: widget.data![index]["precioUnidad"]
+                              txt3: (currencyFormat.format(widget.data![index]["precioUnidad"]))
                                   .toString(),
-                              txt4: widget.data![index]["total"].toString()),
+                              txt4: (currencyFormat.format(widget.data![index]["total"])).toString()),
                           const Divider()
                         ],
                       )),
