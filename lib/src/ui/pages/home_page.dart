@@ -108,8 +108,8 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(8),
           child: ListTile(
             leading: const Icon(Icons.account_circle_outlined),
-            title: Text(r.nombres!),
-            subtitle: Text(r.apellidos!),
+            title: Text("${r.nombres} ${r.apellidos}"),
+            subtitle: Text(r.identificacion!),
             trailing: TextButton(
                 onPressed: () {
                   Navigator.push(
@@ -135,7 +135,7 @@ class _HomePageState extends State<HomePage> {
         ),
         speedDialWidget(
           Icons.monetization_on,
-          'Mis precios',
+          'Lista de precios',
           () {
             Navigator.push(context,
                 MaterialPageRoute(builder: (_) => const MyPricePage()));

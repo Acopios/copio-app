@@ -35,48 +35,34 @@ class MaterialCubit extends Cubit<MaterialState> {
 
   final txtPrice = TextEditingController();
 
-Future<List<MaterialCustom>> obtenerMateriales(bool enabled) async {
-      emit(state.copyWith(loading: enabled));
+Future<List<MaterialModel>> obtenerMateriales(bool enabled) async {
 
-  List<MaterialCustom> material = [];
   final r = await _material.obtenerMateriales();
-  final r2 = await _precioMateriales();
 
-  // Crear un mapa de idMaterial a PrecioMaterial para acceso rápido
-  final Map<int, PrecioMaterial> precioMap = {for (var precio in r2) precio.idMaterial!.idMaterial!: precio};
 
-  // Iterar sobre los materiales y encontrar el precio correspondiente, si existe
-  for (MaterialModel i in r.body!) {
-    final precio = precioMap[i.idMaterial];
-    material.add(MaterialCustom(
-      idMaterial: i.idMaterial!,
-      valor: precio?.valor ?? 0, // Usar el valor encontrado o 0 si no hay precio
-      name: i.nombre!,
-      codigo: i.codigo!,
-    ));
-  }
       emit(state.copyWith(loading: false));
 
-  return material;
+  return r.body!;
 }
 
 
-  Future<List<PrecioMaterial>> _precioMateriales() async {
+  Future<List<PrecioMaterial>> precioMateriales() async {
     final id = await SharedPreferencesManager("id").load();
     final r = await _material.obtenerPrecioMateriales(int.parse(id!));
 
     return r.body!;
   }
 
-  Future<bool> asignarPrecio(MaterialCustom m) async {
+  Future<bool> asignarPrecio(MaterialModel m, int idA, String precio) async {
     emit(state.copyWith(loading: true));
     final id = await SharedPreferencesManager("id").load();
     final r = await _material.asignarPreci(
         dto: AsignarPrecioDto(
-            idMaterial: m.idMaterial,
+           idAsignacion: idA+1,
+            idMaterial: m.idMaterial!,
             idMinorista: int.parse(id!),
             fechaAsigna: DateTime.now().toIso8601String(),
-            valor: double.parse(txtPrice.text)));
+            valor: double.parse(precio)));
 
     emit(state.copyWith(loading: false));
     txtPrice.clear();

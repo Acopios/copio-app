@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:acopios/src/core/url.dart';
 import 'package:acopios/src/data/dto/registro_dto.dart';
 import 'package:acopios/src/data/model/response_base_model.dart';
@@ -12,6 +14,8 @@ class RegistreRepository{
       final response = await Dio().post(url, data: dto.toJson());
       return response.data["success"];
     } on DioException catch (_) {
+
+      log("$_");
       return false;
     }
   }

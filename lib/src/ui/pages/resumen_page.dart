@@ -77,7 +77,7 @@ class _ResumenPagState extends State<ResumenPage> {
               width: _size.width,
               child: Card(
                 child: Padding(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,

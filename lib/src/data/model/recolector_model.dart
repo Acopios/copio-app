@@ -13,6 +13,7 @@ class RecolectorModel {
     String? direccion;
     String? identificacion;
     String? telefono;
+    int? idListaPrecios;
 
     RecolectorModel({
         this.idRecolector,
@@ -21,11 +22,13 @@ class RecolectorModel {
         this.direccion,
         this.identificacion,
         this.telefono,
+        this.idListaPrecios
     });
 
     factory RecolectorModel.fromJson(Map<String, dynamic> json) => RecolectorModel(
         idRecolector: json["idRecolector"],
         nombres: json["nombres"],
+        idListaPrecios:json["idListaPrecios"],
         apellidos: json["apellidos"],
         direccion: json["direccion"],
         identificacion: json["identificacion"],

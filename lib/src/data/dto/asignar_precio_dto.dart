@@ -1,6 +1,7 @@
 class AsignarPrecioDto {
   final int idMaterial;
   final int idMinorista;
+  final int idAsignacion;
   final String fechaAsigna;
   final double valor;
 
@@ -9,6 +10,7 @@ class AsignarPrecioDto {
     required this.idMinorista,
     required this.fechaAsigna,
     required this.valor,
+    required this.idAsignacion
   });
 
   Map<String, dynamic> toJson() => {
@@ -16,5 +18,6 @@ class AsignarPrecioDto {
         "idMinorista": idMinorista,
         "fechaAsigna": fechaAsigna,
         "valor": valor,
+        "idAsignacion": idAsignacion,
       };
 }

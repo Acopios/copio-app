@@ -42,9 +42,9 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<bool> isLoged() async {
-    final r = await SharedPreferencesManager("token").load();
+    final r = await SharedPreferencesManager("token").load() ??"";
 
-    return  r!.isNotEmpty;
+    return  r.isNotEmpty;
   }
 
   ///-----------otros-----------

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 dialogButton({required BuildContext context, required Widget child}) =>
     showModalBottomSheet(
         context: context,
+        isScrollControlled: true,
         builder: (_) => Column(
               children: [
                 Container(

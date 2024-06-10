@@ -18,6 +18,8 @@ class RecolectorCubit extends Cubit<RecolectorState> {
   final ide = TextEditingController();
   final address = TextEditingController();
   final phone = TextEditingController();
+  final lsita = TextEditingController();
+  int idLista =0;
 
   Future<bool> crearRecolector() async {
     emit(state.copyWith(loading: true));
@@ -28,6 +30,7 @@ class RecolectorCubit extends Cubit<RecolectorState> {
       nombres: name.text,
       apellidos: lastname.text,
       direccion: address.text,
+      idListaPrecios: idLista,
       telefono: phone.text,
       identificacion: ide.text,
       idMinorista: int.parse(id!),
@@ -43,6 +46,7 @@ class RecolectorCubit extends Cubit<RecolectorState> {
         lastname.text.isNotEmpty &&
         address.text.isNotEmpty &&
         phone.text.isNotEmpty &&
+        idLista!=0 &&
         ide.text.isNotEmpty) {
       e = true;
     }

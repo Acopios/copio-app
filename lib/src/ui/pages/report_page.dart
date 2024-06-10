@@ -1,16 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:developer';
-
 import 'package:acopios/src/core/utils.dart';
+import 'package:acopios/src/data/model/precio_material.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
 import 'package:acopios/src/ui/blocs/compra/compra_cubit.dart';
 import 'package:acopios/src/ui/blocs/material/material_cubit.dart';
-import 'package:acopios/src/ui/helpers/dialog_helper.dart';
 import 'package:acopios/src/ui/pages/resumen_page.dart';
 import 'package:acopios/src/ui/widgets/btn_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/input_widget.dart';
@@ -26,6 +23,9 @@ class ReportPage extends StatefulWidget {
 class _ReportPageState extends State<ReportPage> {
   late CompraCubit _compraC;
 
+  late Future<List<Precio>> _future;
+  final Map<int, TextEditingController> _controllers = {};
+  final Map<int, bool> _isEditing = {};
   @override
   void initState() {
     super.initState();
@@ -34,7 +34,15 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   _init() {
-    _compraC.obtenerMateriales();
+    _future = _compraC.precioAsignacion(widget.recolectorModel.idListaPrecios!);
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _controllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -45,7 +53,7 @@ class _ReportPageState extends State<ReportPage> {
           child: Scaffold(
         appBar: AppBar(
           elevation: 8,
-          title: const Text("Nuevo reporte"),
+          title: const Text("Nueva Compra"),
         ),
         body: _body(),
       )),
@@ -72,113 +80,96 @@ class _ReportPageState extends State<ReportPage> {
       icon: Icons.search,
       onChanged: (e) {});
 
-  Widget _listCard() => BlocBuilder<CompraCubit, CompraState>(
+  Widget _listCard() => FutureBuilder(
+      future: _future,
+      builder: (_, s) {
+        if (!s.hasData) {
+          return const Center(child: CircularProgressIndicator.adaptive());
+        }
+
+        final list = s.data ?? [];
+
+        if (list.isEmpty) {
+          return const Center(child: Text("Sin información"));
+        }
+
+        return Expanded(
+            child: ListView(
+                children: List.generate(list.length, (index) {
+          if (!_controllers.containsKey(index)) {
+            _controllers[index] = TextEditingController();
+            _isEditing[index] = false;
+          }
+
+          return ListTile(
+            title: Text(list[index].idMaterial.nombre),
+            subtitle:
+                Text("\$ ${currencyFormat.format(list[index].valor.toInt())}"),
+            trailing: SizedBox(
+              width: 200,
+              child: Row(
+                children: [
+                  SizedBox(
+                      width: 150,
+                      child: InputWidget(
+                          controller: _controllers[index]!,
+                          hintText: "2kg",
+                          icon: (Icons.line_weight),
+                          onChanged: (e) {
+                            setState(() {
+                              _isEditing[index] = e.isNotEmpty;
+                            });
+                          })),
+                  if (_isEditing[index]!)
+                    SizedBox(
+                      width: 50,
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _isEditing[index] = false;
+                          });
+                          final m = list[index].idMaterial;
+                          final valor = list[index].valor;
+                          final mat = MaterialCustom(
+                              idMaterial: m.idMaterial,
+                              valor: valor,
+                              codigo: m.codigo,
+                              valorCompra: valor,
+                              cantidad: double.parse(_controllers[index]!.text),
+                              name: m.nombre);
+
+                          _compraC.updateMaterial(mat);
+                        },
+                        icon: const Icon(
+                          Icons.check_circle,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          );
+        })));
+      });
+
+  Widget _btn() => BlocBuilder<CompraCubit, CompraState>(
         builder: (context, state) {
-          final list = state.materiales ?? [];
-          return list.isEmpty
-              ? Expanded(
-                child: Center(
-                    child: Text("Cargando..."),
-                  ),
-              )
-              : Expanded(
-                  child: ListView(
-                  children:
-                      List.generate(list.length, (index) => _card(list[index])),
-                ));
+          return BtnWidget(
+              action: () async {
+                final r =
+                    await _compraC.registrarCompra(widget.recolectorModel);
+                if (r.isEmpty) return;
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => ResumenPage(
+                            isDetalle: false,
+                            recolectorModel: widget.recolectorModel,
+                            data: r)));
+              },
+              txt: "Finalizar",
+              enabled: state.materiales!=null && state.materiales!.isNotEmpty);
         },
       );
-  Widget _card(MaterialCustom m) => Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: ListTile(
-            leading: const Icon(
-              Icons.recycling_outlined,
-              color: Colors.green,
-            ),
-            title: Text(m.name),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("\$ ${currencyFormat.format(m.valorCompra.toInt())}"),
-                Text("Cantidad: ${m.cantidad} KG"),
-              ],
-            ),
-            trailing: TextButton(
-                onPressed: () {
-                  _dialog(m);
-                },
-                child: const Text("Dar precio")),
-          ),
-        ),
-      );
-
-  Widget _btn() => BtnWidget(
-      action: () async {
-        final r = await _compraC.registrarCompra(widget.recolectorModel);
-        if (r.isEmpty) return;
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => ResumenPage(
-                      isDetalle: false,
-                      recolectorModel: widget.recolectorModel,
-                      data: r,
-                    )));
-      },
-      txt: "Finalizar",
-      enabled: true);
-
-  void _dialog(MaterialCustom m) => dialogButton(
-      context: context,
-      child: StatefulBuilder(builder: (BuildContext context, StateSetter s) {
-        return Column(
-          children: [
-            Text("Ingresa precio de venta para el Material ${m.name}"),
-            Text("Precio del material ${m.valor}"),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: InputWidget(
-                type: TextInputType.number,
-                list: [
-                  FilteringTextInputFormatter.digitsOnly
-                ],
-                  controller: _compraC.txt,
-                  hintText: "0.0",
-                  icon: Icons.monetization_on,
-                  onChanged: (e) {
-                    s(() {});
-                  }),
-            ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: InputWidget(
-                  controller: _compraC.txtC,
-                  hintText: "2kg",
-                   list: [
-                  FilteringTextInputFormatter.digitsOnly
-                ],
-                type: TextInputType.number,
-                  icon: Icons.line_weight_rounded,
-                  onChanged: (e) {
-                    s(() {});
-                  }),
-            ),
-            const SizedBox(height: 10),
-            BtnWidget(
-                action: () {
-                  _compraC.updateMaterial(m);
-                  Navigator.pop(context);
-                  _compraC.txt.clear();
-                  _compraC.txtC.clear();
-                },
-                txt: "Agregar ",
-                enabled: _compraC.txt.text.isNotEmpty &&
-                    _compraC.txtC.text.isNotEmpty),
-            const SizedBox(height: 10),
-          ],
-        );
-      }));
 }

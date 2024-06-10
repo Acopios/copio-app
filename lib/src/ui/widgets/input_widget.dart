@@ -6,11 +6,15 @@ class InputWidget extends StatelessWidget {
   final String hintText;
   final IconData icon;
   final TextInputType type;
+  final bool enabled;
+  final Widget?  suffixIcon;
   final List<TextInputFormatter>? list;
   final Function(dynamic e) onChanged;
   const InputWidget(
       {super.key,
       this.list,
+      this.enabled = true,
+      this.suffixIcon,
       required this.controller,
       required this.hintText,
       required this.icon,
@@ -26,8 +30,11 @@ class InputWidget extends StatelessWidget {
       inputFormatters: list,
       decoration: InputDecoration(
         hintText: hintText,
+        suffixIcon:suffixIcon ,
+        enabled: enabled,
         contentPadding: const EdgeInsets.all(0),
         prefixIcon: Icon(icon),
+        disabledBorder: OutlineInputBorder(),
         border: const OutlineInputBorder(),
       ),
     );
