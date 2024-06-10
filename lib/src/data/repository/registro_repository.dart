@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:acopios/src/core/url.dart';
 import 'package:acopios/src/data/dto/registro_dto.dart';
-import 'package:acopios/src/data/model/response_base_model.dart';
 import 'package:dio/dio.dart';
 
 class RegistreRepository{

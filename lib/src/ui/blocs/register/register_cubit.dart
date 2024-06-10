@@ -1,11 +1,9 @@
-import 'package:acopios/src/core/password_encoder.dart';
 import 'package:acopios/src/data/dto/registro_dto.dart';
 import 'package:acopios/src/data/repository/registro_repository.dart';
 import 'package:bcrypt/bcrypt.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bcrypt/flutter_bcrypt.dart';
 
 part 'register_state.dart';
 

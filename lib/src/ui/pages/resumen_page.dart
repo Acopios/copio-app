@@ -3,10 +3,13 @@
 import 'package:acopios/src/core/utils.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
 import 'package:acopios/src/ui/blocs/compra/compra_cubit.dart';
+import 'package:acopios/src/ui/helpers/dialog_helper.dart';
 import 'package:acopios/src/ui/pages/home_page.dart';
 import 'package:acopios/src/ui/widgets/btn_widget.dart';
+import 'package:acopios/src/ui/widgets/input_widget.dart';
 import 'package:acopios/src/ui/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ResumenPage extends StatefulWidget {
   final bool isDetalle;
@@ -28,12 +31,16 @@ class _ResumenPagState extends State<ResumenPage> {
   double valorPagar = 0;
   double valor = 0;
   final _compraC = CompraCubit();
+  List<Map<String, dynamic>>? mapData = [];
 
   Map<String, double> calcularTotales() {
-    for (var item in widget.data!) {
+    mapData = widget.data;
+    totalKilos =0;
+    valorPagar =0;
+    for (var item in mapData!) {
       totalKilos += item["cantidad"];
       valorPagar += item["total"];
-      if(!widget.isDetalle){
+      if (!widget.isDetalle) {
         valor += item["valor"] * item["cantidad"];
       }
     }
@@ -82,12 +89,13 @@ class _ResumenPagState extends State<ResumenPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Recolector: ${widget.recolectorModel.nombres}"),
+                      Text(
+                          "Recolector: ${widget.recolectorModel.nombres} ${widget.recolectorModel.apellidos}"),
+                      Text(
+                          "Identificación: ${widget.recolectorModel.identificacion}"),
                       Text("Kilos ingresados: $totalKilos"),
-                      Text("Valor a pagar: ${currencyFormat.format(valorPagar.toInt())}"),
-                      Visibility(
-                        visible:!widget.isDetalle,
-                        child: Text("Ganancia obtenida: ${valor - valorPagar}")),
+                      Text(
+                          "Valor a pagar: ${currencyFormat.format(valorPagar.toInt())}"),
                     ],
                   ),
                 ),
@@ -100,17 +108,105 @@ class _ResumenPagState extends State<ResumenPage> {
             Expanded(
                 child: ListView(
               children: List.generate(
-                  widget.data!.length,
+                  mapData!.length,
                   (index) => Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          _row(
-                              txt1: widget.data![index]["material"].toString(),
-                              txt2: widget.data![index]["cantidad"].toString(),
-                              txt3: (currencyFormat.format(widget.data![index]["precioUnidad"]))
-                                  .toString(),
-                              txt4: (currencyFormat.format(widget.data![index]["total"])).toString()),
+                          GestureDetector(
+                            onTap: widget.isDetalle? null:() {
+                              final ctrl1 = TextEditingController();
+                              final ctrl2 = TextEditingController();
+                              final int indexS = mapData![index]["idMaterial"];
+                              ctrl1.text =
+                                  mapData![index]["cantidad"].toString();
+                              ctrl2.text =
+                                  mapData![index]["precioUnidad"].toString();
+                              dialogButton(
+                                  isScrollControlled: false,
+                                  context: context,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        const Text("Peso registrado"),
+                                        InputWidget(
+                                            controller: ctrl1,
+                                            type: TextInputType.number,
+                                            list: [
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly
+                                            ],
+                                            hintText: "",
+                                            icon: (Icons.line_weight),
+                                            onChanged: (e) {}),
+                                        const SizedBox(height: 10),
+                                        const Text(
+                                            "Valor por unidad registrado"),
+                                        InputWidget(
+                                            controller: ctrl2,
+                                            hintText: "",
+                                            type: TextInputType.number,
+                                            list: [
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly
+                                            ],
+                                            icon: (Icons.monetization_on),
+                                            onChanged: (e) {}),
+                                        const SizedBox(height: 10),
+                                        BtnWidget(
+                                            action: () {
+                                              Map<String, dynamic> dt = {};
+                                              for (var data in mapData!) {
+                                                if (mapData![index]
+                                                        ["idMaterial"] ==
+                                                    indexS) {
+                                                  dt = ({
+                                                    "idRecolector":
+                                                        data["idRecolector"],
+                                                    "idMinorista":
+                                                        data["idMinorista"],
+                                                    "idMaterial":
+                                                        data["idMaterial"],
+                                                    "fechaAlimenta":
+                                                        data["fechaAlimenta"],
+                                                    "cantidad": double.parse(
+                                                        ctrl1.text),
+                                                    "precioUnidad":
+                                                        double.parse(
+                                                            ctrl2.text),
+                                                    "total": double.parse(
+                                                            ctrl1.text) *
+                                                        double.parse(
+                                                            ctrl2.text),
+                                                    "material":
+                                                        data["material"],
+                                                    "valor":
+                                                        double.parse(ctrl2.text)
+                                                  });
+                                                }
+                                              }
+                                              mapData![index] = dt;
+                                              calcularTotales();
+                                              setState(() {});
+                                              Navigator.pop(context);
+                                            },
+                                            txt: "Actualizar",
+                                            enabled: true)
+                                      ],
+                                    ),
+                                  ));
+                            },
+                            child: _row(
+                                txt1: mapData![index]["material"].toString(),
+                                txt2: mapData![index]["cantidad"].toString(),
+                                txt3: (currencyFormat.format(
+                                        mapData![index]["precioUnidad"]))
+                                    .toString(),
+                                txt4: (currencyFormat
+                                        .format(mapData![index]["total"]))
+                                    .toString()),
+                          ),
                           const Divider()
                         ],
                       )),
@@ -125,7 +221,7 @@ class _ResumenPagState extends State<ResumenPage> {
                       setState(() {
                         loading = true;
                       });
-                      final r = await _compraC.realizarCompra(widget.data!);
+                      final r = await _compraC.realizarCompra(mapData!);
                       if (r) {
                         Navigator.pushAndRemoveUntil(
                             context,
@@ -141,13 +237,7 @@ class _ResumenPagState extends State<ResumenPage> {
             const SizedBox(
               height: 10,
             ),
-            widget.isDetalle
-                ? const SizedBox()
-                : TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Editar"))
+      
           ],
         ),
       );
@@ -158,23 +248,26 @@ class _ResumenPagState extends State<ResumenPage> {
     required String txt3,
     required String txt4,
   }) =>
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Text(txt1),
-            ),
-            Expanded(
-              child: Center(child: Text(txt2)),
-            ),
-            Expanded(child: Center(child: Text(txt3))),
-            Expanded(
-                child:
-                    Container(alignment: Alignment.center, child: Text(txt4))),
-          ],
+      Container(
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(txt1),
+              ),
+              Expanded(
+                child: Center(child: Text(txt2)),
+              ),
+              Expanded(child: Center(child: Text(txt3))),
+              Expanded(
+                  child: Container(
+                      alignment: Alignment.center, child: Text(txt4))),
+            ],
+          ),
         ),
       );
 }

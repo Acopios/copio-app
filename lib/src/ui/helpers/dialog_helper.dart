@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-dialogButton({required BuildContext context, required Widget child}) =>
+dialogButton({required BuildContext context, required Widget child,required bool isScrollControlled}) =>
     showModalBottomSheet(
         context: context,
-        isScrollControlled: true,
+        isScrollControlled: isScrollControlled,
         builder: (_) => Column(
               children: [
                 Container(

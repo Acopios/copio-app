@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:acopios/src/core/url.dart';
 import 'package:acopios/src/data/model/movimientos_model.dart';

@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:developer';
 
 import 'package:acopios/src/ui/blocs/recolector/recolector_cubit.dart';
 import 'package:acopios/src/ui/helpers/alert_dialog_helper.dart';
@@ -184,7 +183,7 @@ class _RecolectorPagStateState extends State<RecolectorPagState> {
                                   )),
                         );
                       },
-                    )));
+                    )), isScrollControlled: false);
               },
               child: InputWidget(
                   enabled: false,
