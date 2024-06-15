@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:acopios/src/core/shared_preferences.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
@@ -16,7 +15,6 @@ class HomeCubit extends Cubit<HomeState> {
   Future<List<RecolectorModel>> obtenerRecolectores() async {
     final id = await SharedPreferencesManager("id").load();
     final r = await _recolectorRepo.obtenerRecolectores(int.parse(id!));
-    log("${r.body!.length} ---<");
     return r.body!;
   }
 }

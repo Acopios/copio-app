@@ -26,13 +26,13 @@ class RecolectorModel {
     });
 
     factory RecolectorModel.fromJson(Map<String, dynamic> json) => RecolectorModel(
-        idRecolector: json["idRecolector"],
-        nombres: json["nombres"],
-        idListaPrecios:json["idListaPrecios"],
-        apellidos: json["apellidos"],
-        direccion: json["direccion"],
-        identificacion: json["identificacion"],
-        telefono: json["telefono"],
+        idRecolector: json["idRecolector"] ??0,
+        nombres: json["nombres"] ??"",
+        idListaPrecios:json["idListaPrecios"] ??0,
+        apellidos: json["apellidos"] ??"",
+        direccion: json["direccion"] ??"",
+        identificacion: json["identificacion"] ??"",
+        telefono: json["telefono"] ??"",
     );
 
     Map<String, dynamic> toJson() => {

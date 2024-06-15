@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:acopios/src/data/model/precio_material.dart';
 import 'package:acopios/src/data/repository/compra_repository.dart';
 import 'package:bloc/bloc.dart';
@@ -63,7 +61,6 @@ class CompraCubit extends Cubit<CompraState> {
     final id = await SharedPreferencesManager("id").load();
 
     List<Map<String, dynamic>> data = [];
-    log("${state.materiales!.length} ..>");
     for (var i in state.materiales!) {
       if (i.cantidad > 0) {
         data.add({
@@ -80,7 +77,6 @@ class CompraCubit extends Cubit<CompraState> {
       }
     }
 
-
     return data;
   }
 
@@ -90,7 +86,7 @@ class CompraCubit extends Cubit<CompraState> {
     return r;
   }
 
-  Future<List<Precio>> precioAsignacion(int id) async {
+  Future<List<PrecioModel>> precioAsignacion(int id) async {
     final r = await _compraRepor.precioPorAsignacion(id);
 
     return r.body!;

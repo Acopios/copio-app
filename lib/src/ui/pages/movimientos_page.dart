@@ -6,7 +6,6 @@ import 'package:acopios/src/ui/blocs/movimientos/movimientos_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-
 import '../widgets/input_widget.dart';
 import 'resumen_page.dart';
 
@@ -85,8 +84,9 @@ class _MovimientosPageState extends State<MovimientosPage> {
                                               .comprasPorRecolector!
                                               .compras!),
                                           builder: (context, snapshot) {
-                                            if (!snapshot.hasData)
+                                            if (!snapshot.hasData) {
                                               return Container();
+                                            }
                                             return Column(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.start,
@@ -143,4 +143,6 @@ class _MovimientosPageState extends State<MovimientosPage> {
       hintText: "Buscar",
       icon: Icons.search,
       onChanged: (e) {});
+
+   
 }

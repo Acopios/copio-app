@@ -2,7 +2,6 @@
 
 import 'package:acopios/src/ui/blocs/register/register_cubit.dart';
 import 'package:acopios/src/ui/pages/login_page.dart';
-import 'package:acopios/src/ui/widgets/chech_widget.dart';
 import 'package:acopios/src/ui/widgets/input_widget.dart';
 import 'package:acopios/src/ui/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +55,7 @@ class _RegisterpageState extends State<Registerpage> {
             _space(30),
             InputWidget(
                 controller: _registroC.name,
-                hintText: "Nombres Bodega",
+                hintText: "Nombre Bodega",
                 icon: Icons.factory,
                 onChanged: (e) {
                   _registroC.enabledBtn();

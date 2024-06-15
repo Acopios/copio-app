@@ -78,9 +78,9 @@ class Compra {
 
   factory Compra.fromJson(Map<String, dynamic> json) => Compra(
         id: json["id"],
-        idMaterial: json["idMaterial"] == null
+        idMaterial: json["material"] == null
             ? null
-            : MaterialModel.fromJson(json["idMaterial"]),
+            : MaterialModel.fromJson(json["material"]),
         fechaAlimenta: json["fechaAlimenta"] == null
             ? null
             : DateTime.parse(json["fechaAlimenta"]),

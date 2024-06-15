@@ -3,173 +3,365 @@
 import 'package:acopios/src/core/utils.dart';
 import 'package:acopios/src/data/model/precio_material.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
-import 'package:acopios/src/ui/blocs/compra/compra_cubit.dart';
-import 'package:acopios/src/ui/blocs/material/material_cubit.dart';
-import 'package:acopios/src/ui/pages/resumen_page.dart';
+import 'package:acopios/src/ui/blocs/reporte/reporte_cubit.dart';
+import 'package:acopios/src/ui/helpers/alert_dialog_helper.dart';
 import 'package:acopios/src/ui/widgets/btn_widget.dart';
+import 'package:acopios/src/ui/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../widgets/input_widget.dart';
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ReportPage extends StatefulWidget {
-  final RecolectorModel recolectorModel;
-  const ReportPage({super.key, required this.recolectorModel});
+  const ReportPage({super.key});
 
   @override
   State<ReportPage> createState() => _ReportPageState();
 }
 
 class _ReportPageState extends State<ReportPage> {
-  late CompraCubit _compraC;
+  final List<Map<String, dynamic>> _dropdownItems = [
+    {"name": "Reporte de compra general", "value": "g"},
+    {"name": "Reporte de compra por recolector", "value": "i"},
+    {"name": "Reporte de venta general", "value": "vg"},
+    {"name": "Reporte de venta por mayorista", "value": "vm"},
+    {"name": "Reporte de rehúso", "value": "r"},
+  ];
 
-  late Future<List<Precio>> _future;
-  final Map<int, TextEditingController> _controllers = {};
-  final Map<int, bool> _isEditing = {};
+  String? _selectedItem;
+  RecolectorModel? _selectedItemReco;
+
+  late Future<List<PrecioModel>> _future;
+
+  late Size _size;
+
+  late ReporteCubit _reporteCubitM;
+
+// Assuming data is extracted and stored in a list named 'data'
+
   @override
   void initState() {
     super.initState();
-    _compraC = CompraCubit();
-    _init();
-  }
 
-  _init() {
-    _future = _compraC.precioAsignacion(widget.recolectorModel.idListaPrecios!);
-  }
-
-  @override
-  void dispose() {
-    for (var controller in _controllers.values) {
-      controller.dispose();
-    }
-    super.dispose();
+    _reporteCubitM = ReporteCubit();
   }
 
   @override
   Widget build(BuildContext context) {
+    _size = MediaQuery.sizeOf(context);
     return BlocProvider(
-      create: (context) => _compraC,
+      create: (context) => _reporteCubitM,
       child: SafeArea(
           child: Scaffold(
-        appBar: AppBar(
-          elevation: 8,
-          title: const Text("Nueva Compra"),
+        appBar: AppBar(elevation: 8, title: const Text("Reportes")),
+        body: BlocBuilder<ReporteCubit, ReporteState>(
+          builder: (context, state) {
+            return Stack(
+              children: [
+                _body(),
+                Visibility(
+                    visible: state.loadingReport, child: const LoadingWidget())
+              ],
+            );
+          },
         ),
-        body: _body(),
       )),
     );
   }
 
   Widget _body() => Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8),
         child: Column(
           children: [
-            const SizedBox(height: 30),
-            _search(),
-            const SizedBox(height: 10),
-            _listCard(),
-            const SizedBox(height: 10),
-            _btn(),
+            SizedBox(height: _size.height * .05),
+            _drop(),
+            BlocBuilder<ReporteCubit, ReporteState>(
+              builder: (context, state) {
+                return Visibility(
+                  visible: state.showDate,
+                  child: Column(
+                    children: [
+                      SizedBox(height: _size.height * .02),
+                      Visibility(
+                          visible: state.listRecolectores != null &&
+                              state.listRecolectores!.isNotEmpty,
+                          child: Column(
+                            children: [
+                              _dropRecolectores(),
+                              SizedBox(height: _size.height * .02),
+                            ],
+                          )),
+                      _selectDate(),
+                      SizedBox(height: _size.height * .02),
+                      _options(),
+                    ],
+                  ),
+                );
+              },
+            ),
+            _listReport()
           ],
         ),
       );
-
-  Widget _search() => InputWidget(
-      controller: TextEditingController(),
-      hintText: "Buscar",
-      icon: Icons.search,
-      onChanged: (e) {});
-
-  Widget _listCard() => FutureBuilder(
-      future: _future,
-      builder: (_, s) {
-        if (!s.hasData) {
-          return const Center(child: CircularProgressIndicator.adaptive());
-        }
-
-        final list = s.data ?? [];
-
-        if (list.isEmpty) {
-          return const Center(child: Text("Sin información"));
-        }
-
-        return Expanded(
-            child: ListView(
-                children: List.generate(list.length, (index) {
-          if (!_controllers.containsKey(index)) {
-            _controllers[index] = TextEditingController();
-            _isEditing[index] = false;
-          }
-
-          return ListTile(
-            title: Text(list[index].idMaterial.nombre),
-            subtitle:
-                Text("\$ ${currencyFormat.format(list[index].valor.toInt())}"),
-            trailing: SizedBox(
-              width: 200,
-              child: Row(
-                children: [
-                  SizedBox(
-                      width: 150,
-                      child: InputWidget(
-                          controller: _controllers[index]!,
-                          hintText: "2kg",
-                          icon: (Icons.line_weight),
-                          onChanged: (e) {
-                            setState(() {
-                              _isEditing[index] = e.isNotEmpty;
-                            });
-                          })),
-                  if (_isEditing[index]!)
-                    SizedBox(
-                      width: 50,
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _isEditing[index] = false;
-                          });
-                          final m = list[index].idMaterial;
-                          final valor = list[index].valor;
-                          final mat = MaterialCustom(
-                              idMaterial: m.idMaterial,
-                              valor: valor,
-                              codigo: m.codigo,
-                              valorCompra: valor,
-                              cantidad: double.parse(_controllers[index]!.text),
-                              name: m.nombre);
-
-                          _compraC.updateMaterial(mat);
-                        },
-                        icon: const Icon(
-                          Icons.check_circle,
-                          color: Colors.green,
-                        ),
-                      ),
-                    ),
-                ],
+  Widget _drop() => BlocBuilder<ReporteCubit, ReporteState>(
+        builder: (context, state) {
+          return Center(
+            child: DropdownButtonFormField<String>(
+              value: _selectedItem,
+              padding: const EdgeInsets.all(0.0), // Adjust padding as needed
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
               ),
+              hint: const Text('Selecciona el reporte a generar'),
+              items: _dropdownItems.map((Map<String, dynamic> item) {
+                final String reportName = item['name'] as String;
+                final String reportValue = item['value'] as String;
+
+                return DropdownMenuItem<String>(
+                  value: reportValue,
+                  child: Text(reportName),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedItem = newValue!;
+                  if (newValue == 'g') {
+                    context.read<ReporteCubit>().showDate(true);
+                    _reporteCubitM.clearR2();
+                  } else if (newValue == 'i') {
+                    context.read<ReporteCubit>().showDate(true);
+                    _selectedItemReco = null;
+                    _reporteCubitM.obtenerRecolectores();
+                  }
+                });
+              },
             ),
           );
-        })));
-      });
+        },
+      );
+  Widget _dropRecolectores() => BlocBuilder<ReporteCubit, ReporteState>(
+        builder: (context, state) {
+          return Center(
+            child: DropdownButtonFormField<RecolectorModel>(
+              value: _selectedItemReco,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+              hint: const Text('Selecciona el reporte a generar'),
+              items: state.listRecolectores!.map((RecolectorModel item) {
+                return DropdownMenuItem<RecolectorModel>(
+                  value: item,
+                  child: Text(item.nombres ?? ""),
+                );
+              }).toList(),
+              onChanged: (RecolectorModel? newValue) {
+                setState(() {
+                  _selectedItemReco = newValue;
+                });
+              },
+            ),
+          );
+        },
+      );
+  Widget _selectDate() => BlocBuilder<ReporteCubit, ReporteState>(
+        builder: (context, state) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Indica las fechas del reporte"),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _date(
+                      state.fechaI != null
+                          ? DateFormat.MMMEd('es').format(state.fechaI!)
+                          : "Fecha incial", () async {
+                    final dateInitial = await getDate(context);
+                    _reporteCubitM.addFechaI(dateInitial!);
+                  }),
+                  _date(
+                      state.fechaF != null
+                          ? DateFormat.MMMEd('es').format(state.fechaF!)
+                          : "Fecha final",
+                      (state.fechaI == null)
+                          ? () {}
+                          : () async {
+                              final dateFinal =
+                                  await getDate(context, date: state.fechaI);
+                              _reporteCubitM.addFechaF(dateFinal!);
+                            })
+                ],
+              ),
+            ],
+          );
+        },
+      );
+  Widget _date(String date, Function() action) => GestureDetector(
+        onTap: action,
+        child: Container(
+          width: _size.width * .4,
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              borderRadius: BorderRadius.circular(5)),
+          child: Row(
+            children: [const Icon(Icons.calendar_month), Text("  $date")],
+          ),
+        ),
+      );
 
-  Widget _btn() => BlocBuilder<CompraCubit, CompraState>(
+  Widget _options() => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _btns(),
+          _btnf(),
+        ],
+      );
+
+  Widget _btns() => BlocBuilder<ReporteCubit, ReporteState>(
         builder: (context, state) {
           return BtnWidget(
               action: () async {
-                final r =
-                    await _compraC.registrarCompra(widget.recolectorModel);
-                if (r.isEmpty) return;
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ResumenPage(
-                            isDetalle: false,
-                            recolectorModel: widget.recolectorModel,
-                            data: r)));
+                if (_selectedItem == "g") {
+                  _reporteCubitM.obtenerReporte();
+                  context.read<ReporteCubit>().showDate(false);
+                }
+                if (_selectedItem == "i") {
+                  _reporteCubitM.obtenerReporteIdividual(
+                      _selectedItemReco!.idRecolector!);
+                  context.read<ReporteCubit>().showDate(false);
+                }
               },
-              txt: "Finalizar",
-              enabled: state.materiales!=null && state.materiales!.isNotEmpty);
+              txt: "Generar Reporte",
+              enabled: true);
         },
+      );
+  Widget _btnf() => BlocBuilder<ReporteCubit, ReporteState>(
+        builder: (context, state) {
+          return TextButton(
+            onPressed: () {
+              context.read<ReporteCubit>().showDate(false);
+            },
+            child: const Text("Cancelar"),
+          );
+        },
+      );
+
+  Widget _listReport() => BlocBuilder<ReporteCubit, ReporteState>(
+        builder: (context, state) {
+          return state.list == null || state.list!.isEmpty
+              ? const SizedBox()
+              : Expanded(
+                  child: ListView(
+                  children: [
+                    SizedBox(height: _size.height * .05),
+                    const Divider(),
+                    _row(
+                        txt1: "Material",
+                        txt2: "KG",
+                        txt3: "Precio KG",
+                        txt4: "Total"),
+                    const Divider(),
+                    ...List.generate(
+                        state.list!.length,
+                        (index) => Column(
+                              children: [
+                                _row(
+                                    txt1: state.list![index].idMaterial.nombre,
+                                    txt2:
+                                        state.list![index].cantidad!.toString(),
+                                    txt3: currencyFormat.format(state
+                                        .list![index].precioUnidad!
+                                        .toInt()),
+                                    txt4: currencyFormat.format(
+                                        state.list![index].total!.toInt())),
+                                const Divider()
+                              ],
+                            )),
+                    SizedBox(height: _size.height * .05),
+                    BtnWidget(
+                        action: () async {
+                          if (_selectedItem == "g") {
+                            Permission.manageExternalStorage
+                                .request()
+                                .then((value) async {
+                              if (value.isGranted) {
+                                final r =
+                                    await _reporteCubitM.crearReporteGeneral();
+
+                                if (r) {
+                                  info(context,
+                                      "Reporte  generado con éxito, lo puedes observar en Descargas",
+                                      () {
+                                    Navigator.pop(context);
+                                  });
+                                } else {
+                                  info(context,
+                                      "No fue posible generar el reporte", () {
+                                    Navigator.pop(context);
+                                  });
+                                }
+                              }
+                            });
+                          }
+                          if (_selectedItem == "i") {
+                            Permission.manageExternalStorage
+                                .request()
+                                .then((value) async {
+                              if (value.isGranted) {
+                                final r = await _reporteCubitM
+                                    .crearReporteInividual(_selectedItemReco!);
+
+                                if (r) {
+                                  info(context,
+                                      "Reporte  generado con éxito, lo puedes observar en Descargas",
+                                      () {
+                                    Navigator.pop(context);
+                                  });
+                                } else {
+                                  info(context,
+                                      "No fue posible generar el reporte", () {
+                                    Navigator.pop(context);
+                                  });
+                                }
+                              }
+                            });
+                          }
+                        },
+                        txt: "Descargar Reporte",
+                        enabled: true)
+                  ],
+                ));
+        },
+      );
+
+  Widget _row({
+    required String txt1,
+    required String txt2,
+    required String txt3,
+    required String txt4,
+  }) =>
+      Container(
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(txt1),
+              ),
+              Expanded(
+                child: Center(child: Text(txt2)),
+              ),
+              Expanded(child: Center(child: Text(txt3))),
+              Expanded(
+                  child: Container(
+                      alignment: Alignment.center, child: Text(txt4))),
+            ],
+          ),
+        ),
       );
 }

@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:acopios/src/data/model/recolector_model.dart';
+
 PrecioMaterial precioMaterialFromJson(String str) => PrecioMaterial.fromJson(json.decode(str));
 
 String precioMaterialToJson(PrecioMaterial data) => json.encode(data.toJson());
@@ -11,7 +13,7 @@ String precioMaterialToJson(PrecioMaterial data) => json.encode(data.toJson());
 
 class PrecioMaterial {
     int idAsignacion;
-    List<Precio> precios;
+    List<PrecioModel> precios;
 
     PrecioMaterial({
         required this.idAsignacion,
@@ -20,7 +22,7 @@ class PrecioMaterial {
 
     factory PrecioMaterial.fromJson(Map<String, dynamic> json) => PrecioMaterial(
         idAsignacion: json["idAsignacion"],
-        precios: List<Precio>.from(json["precios"].map((x) => Precio.fromJson(x))),
+        precios: List<PrecioModel>.from(json["precios"].map((x) => PrecioModel.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -29,27 +31,42 @@ class PrecioMaterial {
     };
 }
 
-class Precio {
+class PrecioModel {
     int id;
+    RecolectorModel? recolectorModel;
     IdMaterial idMaterial;
     DateTime fechaAsigna;
+    DateTime? fechaAlimenta;
     double valor;
+    double? cantidad;
+    double? precioUnidad;
+    double? total;
     int idAsignacion;
 
-    Precio({
+    PrecioModel({
         required this.id,
+        this.recolectorModel,
         required this.idMaterial,
+        this.fechaAlimenta,
+        this.cantidad,
+        this.total,
+        this.precioUnidad,
         required this.fechaAsigna,
         required this.valor,
         required this.idAsignacion,
     });
 
-    factory Precio.fromJson(Map<String, dynamic> json) => Precio(
+    factory PrecioModel.fromJson(Map<String, dynamic> json) => PrecioModel(
         id: json["id"],
-        idMaterial: IdMaterial.fromJson(json["idMaterial"]),
-        fechaAsigna: DateTime.parse(json["fechaAsigna"]),
-        valor: json["valor"],
-        idAsignacion: json["idAsignacion"],
+        idMaterial: IdMaterial.fromJson(json["material"]),
+        recolectorModel:json["recolector"]==null?RecolectorModel.fromJson({}): RecolectorModel.fromJson(json["recolector"]) ,
+        fechaAsigna: json["fechaAsigna"]==null?DateTime.now(): DateTime.parse(json["fechaAsigna"] ),
+        fechaAlimenta: json["fechaAlimenta"]==null?DateTime.now(): DateTime.parse(json["fechaAlimenta"]),
+        valor: json["valor"] ??0.0,
+        cantidad: json["cantidad"] ??0.0,
+        total: json["total"] ??0.0,
+        idAsignacion: json["idAsignacion"] ??0,
+        precioUnidad: json["precioUnidad"] ??0.0,
     );
 
     Map<String, dynamic> toJson() => {

@@ -35,8 +35,8 @@ class _ResumenPagState extends State<ResumenPage> {
 
   Map<String, double> calcularTotales() {
     mapData = widget.data;
-    totalKilos =0;
-    valorPagar =0;
+    totalKilos = 0;
+    valorPagar = 0;
     for (var item in mapData!) {
       totalKilos += item["cantidad"];
       valorPagar += item["total"];
@@ -114,89 +114,94 @@ class _ResumenPagState extends State<ResumenPage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           GestureDetector(
-                            onTap: widget.isDetalle? null:() {
-                              final ctrl1 = TextEditingController();
-                              final ctrl2 = TextEditingController();
-                              final int indexS = mapData![index]["idMaterial"];
-                              ctrl1.text =
-                                  mapData![index]["cantidad"].toString();
-                              ctrl2.text =
-                                  mapData![index]["precioUnidad"].toString();
-                              dialogButton(
-                                  isScrollControlled: false,
-                                  context: context,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: [
-                                        const Text("Peso registrado"),
-                                        InputWidget(
-                                            controller: ctrl1,
-                                            type: TextInputType.number,
-                                            list: [
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly
+                            onTap: widget.isDetalle
+                                ? null
+                                : () {
+                                    final ctrl1 = TextEditingController();
+                                    final ctrl2 = TextEditingController();
+                                    final int indexS =
+                                        mapData![index]["idMaterial"];
+                                    ctrl1.text =
+                                        mapData![index]["cantidad"].toString();
+                                    ctrl2.text = mapData![index]["precioUnidad"]
+                                        .toString();
+                                    dialogButton(
+                                        isScrollControlled: false,
+                                        context: context,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            children: [
+                                              const Text("Peso registrado"),
+                                              InputWidget(
+                                                  controller: ctrl1,
+                                                  type: TextInputType.number,
+                                                  list: [
+                                                    FilteringTextInputFormatter
+                                                        .digitsOnly
+                                                  ],
+                                                  hintText: "",
+                                                  icon: (Icons.line_weight),
+                                                  onChanged: (e) {}),
+                                              const SizedBox(height: 10),
+                                              const Text(
+                                                  "Valor por unidad registrado"),
+                                              InputWidget(
+                                                  controller: ctrl2,
+                                                  hintText: "",
+                                                  type: TextInputType.number,
+                                                  list: [
+                                                    FilteringTextInputFormatter
+                                                        .digitsOnly
+                                                  ],
+                                                  icon: (Icons.monetization_on),
+                                                  onChanged: (e) {}),
+                                              const SizedBox(height: 10),
+                                              BtnWidget(
+                                                  action: () {
+                                                    Map<String, dynamic> dt =
+                                                        {};
+                                                    for (var data in mapData!) {
+                                                      if (mapData![index]
+                                                              ["idMaterial"] ==
+                                                          indexS) {
+                                                        dt = ({
+                                                          "idRecolector": data[
+                                                              "idRecolector"],
+                                                          "idMinorista": data[
+                                                              "idMinorista"],
+                                                          "idMaterial": data[
+                                                              "idMaterial"],
+                                                          "fechaAlimenta": data[
+                                                              "fechaAlimenta"],
+                                                          "cantidad":
+                                                              double.parse(
+                                                                  ctrl1.text),
+                                                          "precioUnidad":
+                                                              double.parse(
+                                                                  ctrl2.text),
+                                                          "total": double.parse(
+                                                                  ctrl1.text) *
+                                                              double.parse(
+                                                                  ctrl2.text),
+                                                          "material":
+                                                              data["material"],
+                                                          "valor": double.parse(
+                                                              ctrl2.text)
+                                                        });
+                                                      }
+                                                    }
+                                                    mapData![index] = dt;
+                                                    calcularTotales();
+                                                    setState(() {});
+                                                    Navigator.pop(context);
+                                                  },
+                                                  txt: "Actualizar",
+                                                  enabled: true)
                                             ],
-                                            hintText: "",
-                                            icon: (Icons.line_weight),
-                                            onChanged: (e) {}),
-                                        const SizedBox(height: 10),
-                                        const Text(
-                                            "Valor por unidad registrado"),
-                                        InputWidget(
-                                            controller: ctrl2,
-                                            hintText: "",
-                                            type: TextInputType.number,
-                                            list: [
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly
-                                            ],
-                                            icon: (Icons.monetization_on),
-                                            onChanged: (e) {}),
-                                        const SizedBox(height: 10),
-                                        BtnWidget(
-                                            action: () {
-                                              Map<String, dynamic> dt = {};
-                                              for (var data in mapData!) {
-                                                if (mapData![index]
-                                                        ["idMaterial"] ==
-                                                    indexS) {
-                                                  dt = ({
-                                                    "idRecolector":
-                                                        data["idRecolector"],
-                                                    "idMinorista":
-                                                        data["idMinorista"],
-                                                    "idMaterial":
-                                                        data["idMaterial"],
-                                                    "fechaAlimenta":
-                                                        data["fechaAlimenta"],
-                                                    "cantidad": double.parse(
-                                                        ctrl1.text),
-                                                    "precioUnidad":
-                                                        double.parse(
-                                                            ctrl2.text),
-                                                    "total": double.parse(
-                                                            ctrl1.text) *
-                                                        double.parse(
-                                                            ctrl2.text),
-                                                    "material":
-                                                        data["material"],
-                                                    "valor":
-                                                        double.parse(ctrl2.text)
-                                                  });
-                                                }
-                                              }
-                                              mapData![index] = dt;
-                                              calcularTotales();
-                                              setState(() {});
-                                              Navigator.pop(context);
-                                            },
-                                            txt: "Actualizar",
-                                            enabled: true)
-                                      ],
-                                    ),
-                                  ));
-                            },
+                                          ),
+                                        ));
+                                  },
                             child: _row(
                                 txt1: mapData![index]["material"].toString(),
                                 txt2: mapData![index]["cantidad"].toString(),
@@ -237,7 +242,6 @@ class _ResumenPagState extends State<ResumenPage> {
             const SizedBox(
               height: 10,
             ),
-      
           ],
         ),
       );

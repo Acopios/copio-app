@@ -21,7 +21,7 @@ class CompraRepo {
     }
   }
 
-  Future<ResponseBaseModel<List<Precio>>> precioPorAsignacion(
+  Future<ResponseBaseModel<List<PrecioModel>>> precioPorAsignacion(
       int id) async {
     try {
       final url = "$urlBase/precio/precio-reco-listar/$id";
@@ -32,13 +32,13 @@ class CompraRepo {
                 "Bearer ${await SharedPreferencesManager("token").load()}"
           }));
 
-      return ResponseBaseModel<List<Precio>>(
-          body: List<Precio>.from(
-              response.data["body"]!.map((x) => Precio.fromJson(x))),
+      return ResponseBaseModel<List<PrecioModel>>(
+          body: List<PrecioModel>.from(
+              response.data["body"]!.map((x) => PrecioModel.fromJson(x))),
           message: response.data["message"],
           success: response.data["success"]);
     } on DioException catch (_) {
-      return ResponseBaseModel<List<Precio>>.fromJson({});
+      return ResponseBaseModel<List<PrecioModel>>.fromJson({});
     }
   }
 }

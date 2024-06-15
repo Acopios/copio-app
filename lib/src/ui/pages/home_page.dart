@@ -5,6 +5,7 @@ import 'package:acopios/src/ui/pages/login_page.dart';
 import 'package:acopios/src/ui/pages/movimientos_page.dart';
 import 'package:acopios/src/ui/pages/my_price_page.dart';
 import 'package:acopios/src/ui/pages/reclector_page.dart';
+import 'package:acopios/src/ui/pages/compra_page.dart';
 import 'package:acopios/src/ui/pages/report_page.dart';
 import 'package:acopios/src/ui/widgets/btn_widget.dart';
 import 'package:acopios/src/ui/widgets/input_widget.dart';
@@ -115,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (_) => ReportPage(
+                          builder: (_) => CompraPage(
                                 recolectorModel: r,
                               )));
                 },
@@ -150,12 +151,30 @@ class _HomePageState extends State<HomePage> {
           },
         ),
         speedDialWidget(
+          Icons.history_edu_rounded,
+          'Reportes',
+          () {
+            Navigator.push(context, MaterialPageRoute(builder: (_)=>const ReportPage()));
+          },
+        ),
+        speedDialWidget(
+          Icons.production_quantity_limits,
+          'Ventas',
+          () {},
+        ),
+        speedDialWidget(
+          Icons.update,
+          'Reuso',
+          () {},
+        ),
+        speedDialWidget(
           Icons.exit_to_app,
           'Cerrar sesión',
           () async {
             await SharedPreferencesManager("token").remove();
             await SharedPreferencesManager("id").remove();
 
+            // ignore: use_build_context_synchronously
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (_) => LoginPage()),

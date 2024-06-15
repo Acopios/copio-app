@@ -5,7 +5,8 @@ alert(BuildContext context, Widget child,
     showDialog(
         context: context,
         builder: (_) => AlertDialog.adaptive(
-              content: Column(    mainAxisSize: MainAxisSize.min,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [child],
               ),
               actions: [
@@ -20,4 +21,11 @@ alert(BuildContext context, Widget child,
               ],
             ));
 
-
+info(BuildContext context, String txt, Function() action1) => showDialog(
+    context: context,
+    builder: (_) => AlertDialog.adaptive(
+          content: Text(txt),
+          actions: [
+            TextButton(onPressed: action1, child: const Text("OK")),
+          ],
+        ));
