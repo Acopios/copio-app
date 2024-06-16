@@ -6,6 +6,8 @@ import 'dart:convert';
 
 import 'package:acopios/src/data/model/recolector_model.dart';
 
+import 'mayorista_model.dart';
+
 PrecioMaterial precioMaterialFromJson(String str) => PrecioMaterial.fromJson(json.decode(str));
 
 String precioMaterialToJson(PrecioMaterial data) => json.encode(data.toJson());
@@ -34,6 +36,7 @@ class PrecioMaterial {
 class PrecioModel {
     int id;
     RecolectorModel? recolectorModel;
+    MayoristaModel? mayorista;
     IdMaterial idMaterial;
     DateTime fechaAsigna;
     DateTime? fechaAlimenta;
@@ -51,6 +54,7 @@ class PrecioModel {
         this.cantidad,
         this.total,
         this.precioUnidad,
+        this.mayorista,
         required this.fechaAsigna,
         required this.valor,
         required this.idAsignacion,
@@ -65,6 +69,7 @@ class PrecioModel {
         valor: json["valor"] ??0.0,
         cantidad: json["cantidad"] ??0.0,
         total: json["total"] ??0.0,
+        mayorista: MayoristaModel.fromJson(json["mayorista"]),
         idAsignacion: json["idAsignacion"] ??0,
         precioUnidad: json["precioUnidad"] ??0.0,
     );

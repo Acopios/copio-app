@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:acopios/src/core/utils.dart';
+import 'package:acopios/src/data/model/mayorista_model.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
 import 'package:acopios/src/ui/blocs/reporte/reporte_cubit.dart';
 import 'package:acopios/src/ui/helpers/alert_dialog_helper.dart';
@@ -24,12 +25,12 @@ class _ReportPageState extends State<ReportPage> {
     {"name": "Reporte de compra por recolector", "value": "i"},
     {"name": "Reporte de venta general", "value": "vg"},
     {"name": "Reporte de venta por mayorista", "value": "vm"},
-    {"name": "Reporte de rehúso", "value": "r"},
+    {"name": "Reporte de reuso", "value": "r"},
   ];
 
   String? _selectedItem;
   RecolectorModel? _selectedItemReco;
-
+  MayoristaModel? _selectedItemMayo;
 
   late Size _size;
 
@@ -89,6 +90,15 @@ class _ReportPageState extends State<ReportPage> {
                               SizedBox(height: _size.height * .02),
                             ],
                           )),
+                      Visibility(
+                          visible: state.mayorista != null &&
+                              state.mayorista!.isNotEmpty,
+                          child: Column(
+                            children: [
+                              _dropMayoristas(),
+                              SizedBox(height: _size.height * .02),
+                            ],
+                          )),
                       _selectDate(),
                       SizedBox(height: _size.height * .02),
                       _options(),
@@ -129,7 +139,20 @@ class _ReportPageState extends State<ReportPage> {
                   } else if (newValue == 'i') {
                     context.read<ReporteCubit>().showDate(true);
                     _selectedItemReco = null;
+                    _selectedItemMayo = null;
+
                     _reporteCubitM.obtenerRecolectores();
+                  } else if (newValue == 'vg') {
+                    context.read<ReporteCubit>().showDate(true);
+                    _selectedItemReco = null;
+                    _selectedItemMayo = null;
+                    _reporteCubitM.clearR2();
+                  } else if (newValue == 'vm') {
+                    context.read<ReporteCubit>().showDate(true);
+                    _selectedItemReco = null;
+                    _selectedItemMayo = null;
+                    _reporteCubitM.clearR2();
+                    _reporteCubitM.obtenerMayoristas();
                   }
                 });
               },
@@ -145,7 +168,7 @@ class _ReportPageState extends State<ReportPage> {
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
               ),
-              hint: const Text('Selecciona el reporte a generar'),
+              hint: const Text('Selecciona el recolector'),
               items: state.listRecolectores!.map((RecolectorModel item) {
                 return DropdownMenuItem<RecolectorModel>(
                   value: item,
@@ -155,6 +178,30 @@ class _ReportPageState extends State<ReportPage> {
               onChanged: (RecolectorModel? newValue) {
                 setState(() {
                   _selectedItemReco = newValue;
+                });
+              },
+            ),
+          );
+        },
+      );
+  Widget _dropMayoristas() => BlocBuilder<ReporteCubit, ReporteState>(
+        builder: (context, state) {
+          return Center(
+            child: DropdownButtonFormField<MayoristaModel>(
+              value: _selectedItemMayo,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+              hint: const Text('Selecciona el mayorista'),
+              items: state.mayorista!.map((MayoristaModel item) {
+                return DropdownMenuItem<MayoristaModel>(
+                  value: item,
+                  child: Text(item.nombre ?? ""),
+                );
+              }).toList(),
+              onChanged: (MayoristaModel? newValue) {
+                setState(() {
+                  _selectedItemMayo = newValue;
                 });
               },
             ),
@@ -228,6 +275,15 @@ class _ReportPageState extends State<ReportPage> {
                 if (_selectedItem == "i") {
                   _reporteCubitM.obtenerReporteIdividual(
                       _selectedItemReco!.idRecolector!);
+                  context.read<ReporteCubit>().showDate(false);
+                }
+                if (_selectedItem == "vg") {
+                  _reporteCubitM.obtenerReporteVenta();
+                  context.read<ReporteCubit>().showDate(false);
+                }
+                if (_selectedItem == "vm") {
+                  _reporteCubitM.obtenerReporteIdividualMay(
+                      _selectedItemMayo!.idMayorista!);
                   context.read<ReporteCubit>().showDate(false);
                 }
               },
@@ -310,6 +366,53 @@ class _ReportPageState extends State<ReportPage> {
                               if (value.isGranted) {
                                 final r = await _reporteCubitM
                                     .crearReporteInividual(_selectedItemReco!);
+
+                                if (r) {
+                                  info(context,
+                                      "Reporte  generado con éxito, lo puedes observar en Descargas",
+                                      () {
+                                    Navigator.pop(context);
+                                  });
+                                } else {
+                                  info(context,
+                                      "No fue posible generar el reporte", () {
+                                    Navigator.pop(context);
+                                  });
+                                }
+                              }
+                            });
+                          }
+                          if (_selectedItem == "vg") {
+                            Permission.manageExternalStorage
+                                .request()
+                                .then((value) async {
+                              if (value.isGranted) {
+                                final r = await _reporteCubitM
+                                    .crearReporteGeneralVenta();
+
+                                if (r) {
+                                  info(context,
+                                      "Reporte  generado con éxito, lo puedes observar en Descargas",
+                                      () {
+                                    Navigator.pop(context);
+                                  });
+                                } else {
+                                  info(context,
+                                      "No fue posible generar el reporte", () {
+                                    Navigator.pop(context);
+                                  });
+                                }
+                              }
+                            });
+                          }
+                          if (_selectedItem == "vm") {
+                            Permission.manageExternalStorage
+                                .request()
+                                .then((value) async {
+                              if (value.isGranted) {
+                                final r = await _reporteCubitM
+                                    .crearReporteInividualMayorista(
+                                        _selectedItemMayo!);
 
                                 if (r) {
                                   info(context,

@@ -1,8 +1,9 @@
-
 import 'package:acopios/src/core/shared_preferences.dart';
 import 'package:acopios/src/core/utils.dart';
+import 'package:acopios/src/data/model/mayorista_model.dart';
 import 'package:acopios/src/data/model/precio_material.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
+import 'package:acopios/src/data/repository/mayorista_repository.dart';
 import 'package:acopios/src/data/repository/recolector_repository.dart';
 import 'package:acopios/src/data/repository/reporte_repository.dart';
 import 'package:bloc/bloc.dart';
@@ -17,6 +18,7 @@ class ReporteCubit extends Cubit<ReporteState> {
   final _reporteR = ReporteRepository();
   final _userRepo = UserRepository();
   final _recolectoRepo = RecolectorRepo();
+  final _mayoRistaRepo = MayoristaRepository();
 
   ReporteCubit() : super(ReporteState());
 
@@ -40,6 +42,14 @@ class ReporteCubit extends Cubit<ReporteState> {
     emit(state.copyWith(list: r.body, loadingReport: false));
   }
 
+  Future<void> obtenerReporteVenta() async {
+    emit(state.copyWith(loadingReport: true));
+    final r = await _reporteR.reporteGeneralVenta(
+        fechaI: state.fechaI!, fechaF: state.fechaF!);
+
+    emit(state.copyWith(list: r.body, loadingReport: false));
+  }
+
   Future<void> obtenerReporteIdividual(int id) async {
     emit(state.copyWith(loadingReport: true));
 
@@ -48,6 +58,15 @@ class ReporteCubit extends Cubit<ReporteState> {
 
     emit(state.copyWith(list: r.body, loadingReport: false));
   }
+    Future<void> obtenerReporteIdividualMay(int id) async {
+    emit(state.copyWith(loadingReport: true));
+
+    final r = await _reporteR.reporteMayorista(
+        idRecolector: id, fechaI: state.fechaI!, fechaF: state.fechaF!);
+
+    emit(state.copyWith(list: r.body, loadingReport: false));
+  }
+
 
   obtenerRecolectores() async {
     emit(state.copyWith(loadingReport: true));
@@ -55,6 +74,13 @@ class ReporteCubit extends Cubit<ReporteState> {
     final r = await _recolectoRepo.obtenerRecolectores(int.parse(id!));
     emit(state
         .copyWith(loadingReport: false, listRecolectores: r.body!, list: []));
+  }
+  obtenerMayoristas() async {
+    emit(state.copyWith(loadingReport: true));
+    final id = await SharedPreferencesManager("id").load();
+    final r = await _mayoRistaRepo.listarMayoristas(id:int.parse(id!));
+    emit(state
+        .copyWith(loadingReport: false, mayorista: r.body!, list: []));
   }
 
   Future<bool> crearReporteGeneral() async {
@@ -87,6 +113,54 @@ class ReporteCubit extends Cubit<ReporteState> {
       body.add([
         TextCellValue(i.recolectorModel!.nombres!),
         TextCellValue(i.recolectorModel!.identificacion!),
+        TextCellValue(i.idMaterial.nombre),
+        TextCellValue(i.idMaterial.codigo),
+        TextCellValue(i.fechaAlimenta!.toIso8601String()),
+        TextCellValue(i.cantidad.toString()),
+        TextCellValue(i.precioUnidad.toString()),
+        TextCellValue(i.total.toString())
+      ]);
+    }
+    try {
+      await crearExcel(columnas: col, userData: userData, body: body);
+      emit(state.copyWith(loadingReport: false));
+
+      return true;
+    } catch (e) {
+      emit(state.copyWith(loadingReport: false));
+
+      return false;
+    }
+  }
+
+  Future<bool> crearReporteGeneralVenta() async {
+    emit(state.copyWith(loadingReport: true));
+
+    final idUser = await SharedPreferencesManager("id").load();
+
+    final user = await _userRepo.infoUser(int.parse(idUser!));
+    final list = state.list;
+    List<CellValue> col = const [
+      TextCellValue("Mayorista"),
+      TextCellValue("Material"),
+      TextCellValue("Codigo"),
+      TextCellValue("Fecha Ingreso"),
+      TextCellValue("Cantidad"),
+      TextCellValue("Precio Unidad"),
+      TextCellValue("Total")
+    ];
+
+    List<Map<String, dynamic>> userData = [
+      {"name": "Nombre", "value": user.body!.nombre! + user.body!.apellidos!},
+      {"name": "Correo", "value": user.body!.correo!},
+      {"name": "Responsable", "value": user.body!.responsable!},
+      {"name": "Direccion", "value": user.body!.direccion!},
+    ];
+    List<List<TextCellValue>> body = [];
+
+    for (var i in list!) {
+      body.add([
+        TextCellValue(i.mayorista!.nombre!),
         TextCellValue(i.idMaterial.nombre),
         TextCellValue(i.idMaterial.codigo),
         TextCellValue(i.fechaAlimenta!.toIso8601String()),
@@ -152,7 +226,48 @@ class ReporteCubit extends Cubit<ReporteState> {
     }
   }
 
+  Future<bool> crearReporteInividualMayorista(
+      MayoristaModel recolectorModel) async {
+    emit(state.copyWith(loadingReport: true));
+
+    final list = state.list;
+    List<CellValue> col = const [
+      TextCellValue("Material"),
+      TextCellValue("Codigo"),
+      TextCellValue("Fecha Ingreso"),
+      TextCellValue("Cantidad"),
+      TextCellValue("Precio Unidad"),
+      TextCellValue("Total")
+    ];
+
+    List<Map<String, dynamic>> userData = [
+      {"name": "Nombre", "value": recolectorModel.nombre!},
+    ];
+    List<List<TextCellValue>> body = [];
+
+    for (var i in list!) {
+      body.add([
+        TextCellValue(i.idMaterial.nombre),
+        TextCellValue(i.idMaterial.codigo),
+        TextCellValue(i.fechaAlimenta!.toIso8601String()),
+        TextCellValue(i.cantidad.toString()),
+        TextCellValue(i.precioUnidad.toString()),
+        TextCellValue(i.total.toString())
+      ]);
+    }
+    try {
+      await crearExcel(columnas: col, userData: userData, body: body);
+      emit(state.copyWith(loadingReport: false));
+
+      return true;
+    } catch (e) {
+      emit(state.copyWith(loadingReport: false));
+
+      return false;
+    }
+  }
+
   clearR2() {
-    emit(state.copyWith(listRecolectores: []));
+    emit(state.copyWith(listRecolectores: [], mayorista: []));
   }
 }

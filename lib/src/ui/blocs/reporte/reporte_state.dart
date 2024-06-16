@@ -9,6 +9,7 @@ class ReporteState extends Equatable {
   final List<PrecioModel>? list;
   late bool loadingReport;
   final List<RecolectorModel>? listRecolectores;
+  final List<MayoristaModel>? mayorista;
 
   ReporteState(
       {this.fechaF,
@@ -16,6 +17,7 @@ class ReporteState extends Equatable {
       this.showDate = false,
       this.list,
       this.listRecolectores,
+      this.mayorista,
       this.loadingReport = false});
 
   @override
@@ -26,6 +28,8 @@ class ReporteState extends Equatable {
         list,
         loadingReport,
         listRecolectores,
+        mayorista,
+        
       ];
 
   ReporteState copyWith(
@@ -33,6 +37,7 @@ class ReporteState extends Equatable {
           DateTime? fechaF,
           bool? loadingReport,
           List<PrecioModel>? list,
+          List<MayoristaModel>? mayorista,
           List<RecolectorModel>? listRecolectores,
           bool? showDate}) =>
       ReporteState(
@@ -41,5 +46,6 @@ class ReporteState extends Equatable {
           fechaI: fechaI ?? this.fechaI,
           listRecolectores: listRecolectores ?? this.listRecolectores,
           list: list ?? this.list,
+          mayorista: mayorista ?? this.mayorista,
           showDate: showDate ?? this.showDate);
 }
