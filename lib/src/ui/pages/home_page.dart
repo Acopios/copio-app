@@ -1,6 +1,7 @@
 import 'package:acopios/src/core/shared_preferences.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
 import 'package:acopios/src/ui/blocs/home/home_cubit.dart';
+import 'package:acopios/src/ui/pages/home_venta_page.dart';
 import 'package:acopios/src/ui/pages/login_page.dart';
 import 'package:acopios/src/ui/pages/movimientos_page.dart';
 import 'package:acopios/src/ui/pages/my_price_page.dart';
@@ -160,7 +161,9 @@ class _HomePageState extends State<HomePage> {
         speedDialWidget(
           Icons.production_quantity_limits,
           'Ventas',
-          () {},
+          () {
+            Navigator.push(context, MaterialPageRoute(builder: (_)=>const HomeVentaPage()));
+          },
         ),
         speedDialWidget(
           Icons.update,
