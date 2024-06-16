@@ -1,6 +1,7 @@
 import 'package:acopios/src/data/model/mayorista_model.dart';
 import 'package:acopios/src/ui/blocs/home_mayorista/home_mayorista_cubit.dart';
 import 'package:acopios/src/ui/pages/agregar_mayorista.dart';
+import 'package:acopios/src/ui/pages/venta_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
@@ -62,8 +63,15 @@ class _HomeVentaPageState extends State<HomeVentaPage> {
             (index) => Card(
                   child: ListTile(
                     title: Text(l[index].nombre!),
-                    trailing:
-                        TextButton(child: Text("Comprar"), onPressed: () {}),
+                    trailing: TextButton(
+                        child: const Text("Vender"),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) =>
+                                      VentaPage(mayoristaModel: l[index])));
+                        }),
                   ),
                 )),
       );
@@ -73,13 +81,12 @@ class _HomeVentaPageState extends State<HomeVentaPage> {
           Icons.factory_outlined,
           'Añadir mayorista',
           () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (_) => AgregarMayorista())).then((value) {
-                  _init();
-                  setState(() {
-                    
-                  });
-                });
+            Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => AgregarMayorista()))
+                .then((value) {
+              _init();
+              setState(() {});
+            });
           },
         ),
       ], child: const Icon(Icons.add));

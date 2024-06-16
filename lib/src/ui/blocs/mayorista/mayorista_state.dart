@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 part of 'mayorista_cubit.dart';
 
 class MayoristaState extends Equatable {

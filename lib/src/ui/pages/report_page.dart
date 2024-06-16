@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:acopios/src/core/utils.dart';
-import 'package:acopios/src/data/model/precio_material.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
 import 'package:acopios/src/ui/blocs/reporte/reporte_cubit.dart';
 import 'package:acopios/src/ui/helpers/alert_dialog_helper.dart';
@@ -31,7 +30,6 @@ class _ReportPageState extends State<ReportPage> {
   String? _selectedItem;
   RecolectorModel? _selectedItemReco;
 
-  late Future<List<PrecioModel>> _future;
 
   late Size _size;
 
