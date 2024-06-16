@@ -1,4 +1,3 @@
-
 import 'package:acopios/src/core/shared_preferences.dart';
 import 'package:acopios/src/data/dto/login_dto.dart';
 import 'package:acopios/src/data/repository/login_repository.dart';
@@ -42,9 +41,13 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<bool> isLoged() async {
-    final r = await SharedPreferencesManager("token").load() ??"";
+    final r = await SharedPreferencesManager("token").load() ?? "";
 
-    return  r.isNotEmpty;
+    return r.isNotEmpty;
+  }
+
+  void showPass() {
+    emit(state.copyWith(visible: !state.visible));
   }
 
   ///-----------otros-----------

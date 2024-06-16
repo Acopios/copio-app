@@ -13,7 +13,7 @@ class MayoristaModel {
   factory MayoristaModel.fromJson(Map<String, dynamic> json) => MayoristaModel(
         idMayorista: json["idMayorista"] ?? 0,
         nombre: json["nombre"] ?? "",
-        fechaCreacion: DateTime.parse(json["fechaCreacion"]),
-        fechaActualizacion: DateTime.parse(json["fechaActualizacion"]),
+        fechaCreacion: json["fechaCreacion"]==null?DateTime.now(): DateTime.parse(json["fechaCreacion"]),
+        fechaActualizacion:json["fechaActualizacion"]==null?DateTime.now(): DateTime.parse(json[""]),
       );
 }

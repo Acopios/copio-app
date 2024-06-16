@@ -52,4 +52,8 @@ class RegisterCubit extends Cubit<RegisterState> {
 
     return r;
   }
+
+  showPass(){
+    emit(state.copyWith(visible: !state.visible));
+  }
 }

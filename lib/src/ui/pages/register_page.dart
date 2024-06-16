@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:acopios/src/core/utils.dart';
 import 'package:acopios/src/ui/blocs/register/register_cubit.dart';
+import 'package:acopios/src/ui/helpers/alert_dialog_helper.dart';
 import 'package:acopios/src/ui/pages/login_page.dart';
 import 'package:acopios/src/ui/widgets/input_widget.dart';
 import 'package:acopios/src/ui/widgets/loading_widget.dart';
@@ -64,7 +66,10 @@ class _RegisterpageState extends State<Registerpage> {
             InputWidget(
                 controller: _registroC.phone,
                 type: TextInputType.number,
-                list: [FilteringTextInputFormatter.digitsOnly],
+                list: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10)
+                ],
                 hintText: "Número celular",
                 icon: Icons.phone,
                 onChanged: (e) {
@@ -95,13 +100,24 @@ class _RegisterpageState extends State<Registerpage> {
                   _registroC.enabledBtn();
                 }),
             _space(10),
-            InputWidget(
-                controller: _registroC.contra,
-                hintText: "Contraseña",
-                icon: Icons.lock_rounded,
-                onChanged: (e) {
-                  _registroC.enabledBtn();
-                }),
+            BlocBuilder<RegisterCubit, RegisterState>(
+              builder: (context, state) {
+                return InputWidget(
+                    controller: _registroC.contra,
+                    obscureText: state.visible,
+                    hintText: "Contraseña",
+                    suffixIcon: IconButton(
+                      icon: state.visible? Icon(Icons.visibility):Icon(Icons.visibility_off),
+                      onPressed: () {
+                        context.read<RegisterCubit>().showPass();
+                      },
+                    ),
+                    icon: Icons.lock_rounded,
+                    onChanged: (e) {
+                      _registroC.enabledBtn();
+                    });
+              },
+            ),
             _space(30),
             BlocBuilder<RegisterCubit, RegisterState>(
               builder: (context, state) {
@@ -115,6 +131,9 @@ class _RegisterpageState extends State<Registerpage> {
                             MaterialPageRoute(
                                 builder: (_) => const LoginPage()),
                             (route) => false);
+                      } else {
+                        info(context, messageError,
+                            () => Navigator.pop(context));
                       }
                     },
                     txt: "Registrar");

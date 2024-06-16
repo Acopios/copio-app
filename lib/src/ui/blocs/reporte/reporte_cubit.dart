@@ -36,16 +36,18 @@ class ReporteCubit extends Cubit<ReporteState> {
 
   Future<void> obtenerReporte() async {
     emit(state.copyWith(loadingReport: true));
+    final id = await SharedPreferencesManager("id").load();
     final r = await _reporteR.reporteGeneral(
-        fechaI: state.fechaI!, fechaF: state.fechaF!);
+        id: int.parse(id!), fechaI: state.fechaI!, fechaF: state.fechaF!);
 
     emit(state.copyWith(list: r.body, loadingReport: false));
   }
 
   Future<void> obtenerReporteVenta() async {
     emit(state.copyWith(loadingReport: true));
+    final id = await SharedPreferencesManager("id").load();
     final r = await _reporteR.reporteGeneralVenta(
-        fechaI: state.fechaI!, fechaF: state.fechaF!);
+        id: int.parse(id!), fechaI: state.fechaI!, fechaF: state.fechaF!);
 
     emit(state.copyWith(list: r.body, loadingReport: false));
   }
@@ -58,7 +60,8 @@ class ReporteCubit extends Cubit<ReporteState> {
 
     emit(state.copyWith(list: r.body, loadingReport: false));
   }
-    Future<void> obtenerReporteIdividualMay(int id) async {
+
+  Future<void> obtenerReporteIdividualMay(int id) async {
     emit(state.copyWith(loadingReport: true));
 
     final r = await _reporteR.reporteMayorista(
@@ -67,7 +70,6 @@ class ReporteCubit extends Cubit<ReporteState> {
     emit(state.copyWith(list: r.body, loadingReport: false));
   }
 
-
   obtenerRecolectores() async {
     emit(state.copyWith(loadingReport: true));
     final id = await SharedPreferencesManager("id").load();
@@ -75,12 +77,12 @@ class ReporteCubit extends Cubit<ReporteState> {
     emit(state
         .copyWith(loadingReport: false, listRecolectores: r.body!, list: []));
   }
+
   obtenerMayoristas() async {
     emit(state.copyWith(loadingReport: true));
     final id = await SharedPreferencesManager("id").load();
-    final r = await _mayoRistaRepo.listarMayoristas(id:int.parse(id!));
-    emit(state
-        .copyWith(loadingReport: false, mayorista: r.body!, list: []));
+    final r = await _mayoRistaRepo.listarMayoristas(id: int.parse(id!));
+    emit(state.copyWith(loadingReport: false, mayorista: r.body!, list: []));
   }
 
   Future<bool> crearReporteGeneral() async {

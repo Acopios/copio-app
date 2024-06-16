@@ -1,4 +1,5 @@
 
+import 'package:acopios/src/core/utils.dart';
 import 'package:dio/dio.dart';
 
 import '../../core/url.dart';
@@ -17,6 +18,7 @@ class LoginRepository {
           message: response.data["message"],
           success: response.data["success"]);
     } on DioException catch (_) {
+       messageError = _.response!.data["body"]["message"];
       return ResponseBaseModel<LoginModel>.fromJson({});
     }
   }

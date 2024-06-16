@@ -1,20 +1,19 @@
-
 import 'dart:developer';
 
 import 'package:acopios/src/core/url.dart';
 import 'package:acopios/src/data/dto/registro_dto.dart';
 import 'package:dio/dio.dart';
 
-class RegistreRepository{
+import '../../core/utils.dart';
 
-   Future<bool> registro(RegistroDto dto) async {
+class RegistreRepository {
+  Future<bool> registro(RegistroDto dto) async {
     try {
       const url = "$urlBase/usuario/crear";
       final response = await Dio().post(url, data: dto.toJson());
       return response.data["success"];
-    } on DioException catch (_) {
-
-      log("$_");
+    } on DioException catch (_, __) {
+      messageError = _.response!.data["body"]["message"];
       return false;
     }
   }

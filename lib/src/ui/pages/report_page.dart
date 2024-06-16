@@ -305,7 +305,12 @@ class _ReportPageState extends State<ReportPage> {
   Widget _listReport() => BlocBuilder<ReporteCubit, ReporteState>(
         builder: (context, state) {
           return state.list == null || state.list!.isEmpty
-              ? const SizedBox()
+              ?  SizedBox(child: Visibility(
+                visible: state.list == null ||  state.list!.isEmpty,
+                child: Container(
+                
+                margin: EdgeInsets.only(top: 200),
+                child: Text("Sin información"))) ,)
               : Expanded(
                   child: ListView(
                   children: [
@@ -317,6 +322,7 @@ class _ReportPageState extends State<ReportPage> {
                         txt3: "Precio KG",
                         txt4: "Total"),
                     const Divider(),
+
                     ...List.generate(
                         state.list!.length,
                         (index) => Column(

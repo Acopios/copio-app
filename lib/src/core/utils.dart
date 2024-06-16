@@ -11,6 +11,8 @@ import 'package:permission_handler/permission_handler.dart';
 final NumberFormat currencyFormat =
     NumberFormat.currency(locale: 'es', symbol: '');
 
+    String messageError ="";
+
 ///[getDate] genera un calendario
 Future<DateTime?> getDate(BuildContext context, {DateTime? date}) =>
     showDatePicker(
@@ -33,6 +35,7 @@ Future<void> crearExcel({
   }
 
   var excel = Excel.createExcel();
+  
   Sheet sheetObject = excel['Reporte'];
 
   // Agregar información del usuario

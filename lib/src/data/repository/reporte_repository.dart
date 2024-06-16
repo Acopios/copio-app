@@ -6,9 +6,11 @@ import 'package:dio/dio.dart';
 
 class ReporteRepository {
   Future<ResponseBaseModel<List<PrecioModel>>> reporteGeneral(
-      {required DateTime fechaI, required DateTime fechaF}) async {
+      {required int id,
+      required DateTime fechaI,
+      required DateTime fechaF}) async {
     try {
-      const url = "$urlBase/reporte/compra-general";
+      final url = "$urlBase/reporte/compra-general/$id";
 
       final response = await Dio().get(url,
           queryParameters: {
@@ -62,9 +64,11 @@ class ReporteRepository {
   }
 
   Future<ResponseBaseModel<List<PrecioModel>>> reporteGeneralVenta(
-      {required DateTime fechaI, required DateTime fechaF}) async {
+      {required DateTime fechaI,
+      required DateTime fechaF,
+      required int id}) async {
     try {
-      const url = "$urlBase/reporte/venta-general";
+      final url = "$urlBase/reporte/venta-general/$id";
 
       final response = await Dio().get(url,
           queryParameters: {
@@ -87,7 +91,8 @@ class ReporteRepository {
       return ResponseBaseModel<List<PrecioModel>>.fromJson({});
     }
   }
-   Future<ResponseBaseModel<List<PrecioModel>>> reporteMayorista(
+
+  Future<ResponseBaseModel<List<PrecioModel>>> reporteMayorista(
       {required int idRecolector,
       required DateTime fechaI,
       required DateTime fechaF}) async {

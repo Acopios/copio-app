@@ -69,7 +69,7 @@ class PrecioModel {
         valor: json["valor"] ??0.0,
         cantidad: json["cantidad"] ??0.0,
         total: json["total"] ??0.0,
-        mayorista: MayoristaModel.fromJson(json["mayorista"]),
+        mayorista: json["mayorista"]==null?MayoristaModel.fromJson({}): MayoristaModel.fromJson(json["mayorista"]),
         idAsignacion: json["idAsignacion"] ??0,
         precioUnidad: json["precioUnidad"] ??0.0,
     );

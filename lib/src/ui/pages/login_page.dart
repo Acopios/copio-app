@@ -10,6 +10,8 @@ import 'package:acopios/src/ui/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../core/utils.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -31,8 +33,10 @@ class _LoginPageState extends State<LoginPage> {
 
   _init() async {
     if (await _cubit.isLoged()) {
-      Navigator.pushAndRemoveUntil(context,
-          MaterialPageRoute(builder: (_) => const HomePage()), (route) => false);
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const HomePage()),
+          (route) => false);
     }
   }
 
@@ -86,13 +90,24 @@ class _LoginPageState extends State<LoginPage> {
                   _cubit.isEnabled();
                 }),
             _space(10),
-            InputWidget(
-                controller: _cubit.password,
-                hintText: "Contraseña",
-                icon: Icons.lock,
-                onChanged: (e) {
-                  _cubit.isEnabled();
-                }),
+            BlocBuilder<LoginCubit, LoginState>(
+              builder: (context, state) {
+                return InputWidget(
+                    controller: _cubit.password,
+                    hintText: "Contraseña",
+                    obscureText: state.visible,
+                      suffixIcon: IconButton(
+                      icon: state.visible? Icon(Icons.visibility):Icon(Icons.visibility_off),
+                      onPressed: () {
+                        context.read<LoginCubit>().showPass();
+                      },
+                    ),
+                    icon: Icons.lock,
+                    onChanged: (e) {
+                      _cubit.isEnabled();
+                    });
+              },
+            ),
             _space(10),
             Container(
               alignment: Alignment.centerLeft,
@@ -118,16 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                         MaterialPageRoute(builder: (_) => const HomePage()),
                         (route) => false);
                   } else {
-                    alert(
-                        context,
-                        const Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text("Por favor revisa tus datos de ingreso")
-                          ],
-                        ), action1: () {
-                      Navigator.pop(context);
-                    });
+                    info(context, messageError, () => Navigator.pop(context));
                   }
                 }
               },

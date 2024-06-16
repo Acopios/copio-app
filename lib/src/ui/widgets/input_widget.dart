@@ -7,13 +7,15 @@ class InputWidget extends StatelessWidget {
   final IconData icon;
   final TextInputType type;
   final bool enabled;
-  final Widget?  suffixIcon;
+  final bool obscureText;
+  final Widget? suffixIcon;
   final List<TextInputFormatter>? list;
   final Function(dynamic e) onChanged;
   const InputWidget(
       {super.key,
       this.list,
       this.enabled = true,
+      this.obscureText = false,
       this.suffixIcon,
       required this.controller,
       required this.hintText,
@@ -28,13 +30,15 @@ class InputWidget extends StatelessWidget {
       onChanged: onChanged,
       keyboardType: type,
       inputFormatters: list,
+      obscureText: obscureText,
       decoration: InputDecoration(
         hintText: hintText,
-        suffixIcon:suffixIcon ,
+        suffixIcon: suffixIcon,
         enabled: enabled,
+        
         contentPadding: const EdgeInsets.all(0),
         prefixIcon: Icon(icon),
-        disabledBorder: OutlineInputBorder(),
+        disabledBorder: const OutlineInputBorder(),
         border: const OutlineInputBorder(),
       ),
     );
