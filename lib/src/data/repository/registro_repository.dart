@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:acopios/src/core/url.dart';
 import 'package:acopios/src/data/dto/registro_dto.dart';

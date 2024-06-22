@@ -30,7 +30,10 @@ class _VentaPageState extends State<VentaPage> {
     super.initState();
     _cubit = VentaCubit();
     _future = _cubit.obtenerMateriales();
+    
   }
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +83,19 @@ class _VentaPageState extends State<VentaPage> {
                                         style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold)),
-                                    Text("Disponible en bodega: ",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold)),
+                                    FutureBuilder<double>(
+                                        future: _cubit
+                                            .cantidad(l[index].idMaterial!),
+                                        builder: (context, snapshot) {
+                                          if (!snapshot.hasData) {
+                                            return const SizedBox();
+                                          }
+
+                                          return Text(
+                                              "Disponible en bodega: ${snapshot.data} ",
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold));
+                                        }),
                                     const SizedBox(height: 10),
                                     Row(
                                       mainAxisAlignment:

@@ -1,10 +1,14 @@
+import 'dart:developer';
+
 import 'package:acopios/src/data/model/material_model.dart';
 import 'package:acopios/src/data/model/mayorista_model.dart';
+import 'package:acopios/src/data/repository/inventario_repo.dart';
 import 'package:acopios/src/data/repository/material_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../core/shared_preferences.dart';
+import '../../../data/model/inventario_model.dart';
 import '../../../data/repository/venta_repisitory.dart';
 import '../material/material_cubit.dart';
 
@@ -13,13 +17,42 @@ part 'venta_state.dart';
 class VentaCubit extends Cubit<VentaState> {
   final _matC = MaterialRepo();
   final _ventaC = VentaRepoitory();
-   VentaCubit() : super(VentaState());
+  final _inven = InventarioRepo();
+  VentaCubit() : super(const VentaState());
 
+  List<InventarioModel> l = [];
+  List<int> ids = [];
   Future<List<MaterialModel>> obtenerMateriales() async {
     final r = await _matC.obtenerMateriales();
+    ids = [];
+
+    for (var i in r.body!) {
+      ids.add(i.idMaterial!);
+    }
+    await disponibilidad();
     return r.body!;
   }
 
+  Future<void> disponibilidad() async {
+    final id = await SharedPreferencesManager("id").load();
+    l = [];
+    final r = await _inven.disponibilidad(ids, int.parse(id!));
+    l = r.body!;
+  }
+
+  Future<double> cantidad(int id) async {
+    final r =l
+            .firstWhere((element) => element.material?.idMaterial == id,
+                orElse: () => InventarioModel(
+                    material: MaterialModel(idMaterial: id),
+                    cantidad: 0) // Replace with an appropriate default instance
+                )
+            .cantidad ??
+        0;
+
+        log("$r" );
+    return r;
+  }
 
   void updateMaterial(MaterialCustom m) {
     // Inicializa una lista vacía de materiales
@@ -60,7 +93,7 @@ class VentaCubit extends Cubit<VentaState> {
     emit(state.copyWith(materiales: mat));
   }
 
-    Future<List<Map<String, dynamic>>> registrarVenta(MayoristaModel r) async {
+  Future<List<Map<String, dynamic>>> registrarVenta(MayoristaModel r) async {
     final id = await SharedPreferencesManager("id").load();
 
     List<Map<String, dynamic>> data = [];
@@ -82,7 +115,8 @@ class VentaCubit extends Cubit<VentaState> {
 
     return data;
   }
- Future<bool> realizarCompra(List<Map<String, dynamic>> data) async {
+
+  Future<bool> realizarCompra(List<Map<String, dynamic>> data) async {
     final r = await _ventaC.registarVenta(data);
     return r;
   }

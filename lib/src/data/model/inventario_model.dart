@@ -10,6 +10,6 @@ class InventarioModel {
   factory InventarioModel.fromJson(Map<String, dynamic> json) =>
       InventarioModel(
           idInventario: json["idInventario"],
-          cantidad: json["cantidad"],
+          cantidad: json["cantidad"] ?? 0,
           material: MaterialModel.fromJson(json["material"]));
 }
