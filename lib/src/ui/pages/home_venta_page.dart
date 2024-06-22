@@ -40,18 +40,21 @@ class _HomeVentaPageState extends State<HomeVentaPage> {
           future: _future,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Center(
-                child: const CircularProgressIndicator.adaptive(),
+              return const Center(
+                child: CircularProgressIndicator.adaptive(),
               );
             }
             final list = snapshot.data ?? [];
 
             if (list.isEmpty) {
-              return Center(
+              return const Center(
                 child: Text("Sin mayoritas"),
               );
             }
-            return _listMayoristas(list);
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _listMayoristas(list),
+            );
           }),
       floatingActionButton: _option(),
     ));
@@ -61,28 +64,40 @@ class _HomeVentaPageState extends State<HomeVentaPage> {
         children: List.generate(
             l.length,
             (index) => Card(
-                  child: ListTile(
-                    title: Text(l[index].nombre!),
-                    trailing: TextButton(
-                        child: const Text("Vender"),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) =>
-                                      VentaPage(mayoristaModel: l[index])));
-                        }),
+                elevation: 8,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _text("Bodega:", l[index].nombre!),
+                      _text("Dirección:", l[index].direccion!),
+                      _text("Representante:", l[index].direccion!),
+                      _text("Representante:", l[index].nit!),
+
+                      const SizedBox(height: 10),
+                      Center(child: TextButton(child: Text("Vender"), onPressed: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (_)=>VentaPage(mayoristaModel: l[index])));
+
+                      }),)
+                    ],
                   ),
-                )),
+                ))),
       );
 
+  Widget _text(String text1, String txt2) => RichText(
+        text: TextSpan(children: [
+          TextSpan(text: text1, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+          TextSpan(text: " $txt2", style:  const TextStyle(color: Colors.black)),
+        ]),
+      );
   Widget _option() => SpeedDial(children: [
         speedDialWidget(
           Icons.factory_outlined,
           'Añadir mayorista',
           () {
             Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => AgregarMayorista()))
+                    MaterialPageRoute(builder: (_) => const AgregarMayorista()))
                 .then((value) {
               _init();
               setState(() {});

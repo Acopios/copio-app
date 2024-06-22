@@ -60,7 +60,34 @@ class _AgregarMayoristaState extends State<AgregarMayorista> {
                     icon: (Icons.person),
                     onChanged: (e) {
                       c.enbaled(
-                          e.toString().isNotEmpty && e.toString().length >= 4);
+                          );
+                    }),
+                const SizedBox(height: 10),
+                InputWidget(
+                    controller: c.nit,
+                    hintText: "Nit",
+                    icon: (Icons.person),
+                    onChanged: (e) {
+                      c.enbaled(
+                          );
+                    }),
+                const SizedBox(height: 10),
+                InputWidget(
+                    controller: c.representante,
+                    hintText: "Representante",
+                    icon: (Icons.person),
+                    onChanged: (e) {
+                      c.enbaled(
+                          );
+                    }),
+                const SizedBox(height: 10),
+                InputWidget(
+                    controller: c.direccion,
+                    hintText: "Dirección",
+                    icon: (Icons.person),
+                    onChanged: (e) {
+                      c.enbaled(
+                          );
                     }),
                 const Expanded(child: SizedBox()),
                 BtnWidget(

@@ -174,6 +174,7 @@ class _RecolectorPagStateState extends State<RecolectorPagState> {
                                                         "Lista de precio ${list[index].idAsignacion}";
                                                   });
                                                   Navigator.pop(context);
+                                                      _recolectorCubit.isEnabled();
                                                 },
                                                 txt: "Asignar",
                                                 enabled: true),

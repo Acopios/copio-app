@@ -3,7 +3,7 @@ import 'package:acopios/src/data/model/recolector_model.dart';
 import 'package:acopios/src/ui/blocs/home/home_cubit.dart';
 import 'package:acopios/src/ui/pages/home_venta_page.dart';
 import 'package:acopios/src/ui/pages/login_page.dart';
-import 'package:acopios/src/ui/pages/movimientos_page.dart';
+import 'package:acopios/src/ui/pages/inventario_page.dart';
 import 'package:acopios/src/ui/pages/my_price_page.dart';
 import 'package:acopios/src/ui/pages/reclector_page.dart';
 import 'package:acopios/src/ui/pages/compra_page.dart';
@@ -145,14 +145,14 @@ class _HomePageState extends State<HomePage> {
         ),
         speedDialWidget(
           Icons.history_edu_outlined,
-          'Movimientos',
+          'Inventario',
           () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const MovimientosPage()));
+                MaterialPageRoute(builder: (_) => const InventarioPage()));
           },
         ),
         speedDialWidget(
-          Icons.history_edu_rounded,
+          Icons.history_edu_outlined,
           'Reportes',
           () {
             Navigator.push(context, MaterialPageRoute(builder: (_)=>const ReportPage()));

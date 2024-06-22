@@ -22,6 +22,7 @@ class _MyPricePageState extends State<MyPricePage> {
 
   late Future<List<PrecioMaterial>> _future;
   int tamanio = 0;
+  bool loading =false;
 
   @override
   void initState() {
@@ -33,6 +34,11 @@ class _MyPricePageState extends State<MyPricePage> {
 
   _init(enabled) {
     _future = _cubit.precioMateriales();
+    _future.then((value) {
+      setState(() {
+        loading=false;
+      });
+    });
   }
 
   @override
@@ -47,7 +53,7 @@ class _MyPricePageState extends State<MyPricePage> {
             return Stack(
               children: [
                 _body(),
-                Visibility(visible: state.loading, child: const LoadingWidget())
+                Visibility(visible: state.loading || loading, child: const LoadingWidget())
               ],
             );
           },
@@ -106,6 +112,9 @@ class _MyPricePageState extends State<MyPricePage> {
                           id: tamanio,
                         ))).then((value) {
               _init(false);
+              setState(() {
+                 loading=true;
+              });
             });
           },
           txt: "Crear Lista",

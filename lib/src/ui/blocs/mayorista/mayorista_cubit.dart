@@ -13,9 +13,21 @@ class MayoristaCubit extends Cubit<MayoristaState> {
   MayoristaCubit() : super(MayoristaState());
 
   final txt = TextEditingController();
+  final nit = TextEditingController();
+  final representante = TextEditingController();
+  final direccion = TextEditingController();
 
-  enbaled(bool e) {
-    emit(state.copyWith(enabled: e));
+  enbaled() {
+    bool enabled = false;
+
+    if (txt.text.isNotEmpty &&
+        nit.text.isNotEmpty &&
+        representante.text.isNotEmpty &&
+        direccion.text.isNotEmpty) {
+      enabled = true;
+    }
+
+    emit(state.copyWith(enabled: enabled));
   }
 
   Future<bool> crearMayorista() async {
@@ -23,6 +35,9 @@ class MayoristaCubit extends Cubit<MayoristaState> {
     final id = await SharedPreferencesManager("id").load();
 
     final r = await _mayoristaRepo.registarCompra(CrearMayoristaDto(
+            direccion: direccion.text,
+            nit: nit.text,
+            representante: representante.text,
             fechaActualizacion: DateTime.now().toIso8601String(),
             fechaCreacion: DateTime.now().toIso8601String(),
             nombre: txt.text,

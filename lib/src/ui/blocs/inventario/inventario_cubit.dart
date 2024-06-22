@@ -1,24 +1,24 @@
 import 'dart:developer';
 
+import 'package:acopios/src/data/model/inventario_model.dart';
 import 'package:acopios/src/data/model/movimientos_model.dart';
-import 'package:acopios/src/data/repository/movimientos_repo.dart';
+import 'package:acopios/src/data/repository/inventario_repo.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../core/shared_preferences.dart';
 
-part 'movimientos_state.dart';
+part 'inventario_state.dart';
 
-class MovimientosCubit extends Cubit<MovimientosState> {
-  final _movimientoRepo = MovimientosRepo();
+class InventarioCubit extends Cubit<InventarioState> {
+  final _movimientoRepo = InventarioRepo();
 
-  MovimientosCubit() : super(MovimientosInitial());
+  InventarioCubit() : super(InventarioState());
 
-  Future<List<MovimientosModel>> obtenerMovimientos() async {
+  Future<List<InventarioModel>> listarInventar() async {
     final id = await SharedPreferencesManager("id").load();
 
-    log("$id");
-    final r = await _movimientoRepo.obtenerMovimientos(int.parse(id!));
+    final r = await _movimientoRepo.listarInventar(int.parse(id!));
 
     return r.body!;
   }

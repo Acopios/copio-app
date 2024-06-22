@@ -2,7 +2,6 @@
 
 import 'package:acopios/src/core/utils.dart';
 import 'package:acopios/src/data/model/mayorista_model.dart';
-import 'package:acopios/src/ui/blocs/compra/compra_cubit.dart';
 import 'package:acopios/src/ui/blocs/venta/venta_cubit.dart';
 import 'package:acopios/src/ui/helpers/dialog_helper.dart';
 import 'package:acopios/src/ui/pages/home_page.dart';
