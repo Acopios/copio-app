@@ -1,10 +1,28 @@
 part of 'home_cubit.dart';
 
-sealed class HomeState extends Equatable {
-  const HomeState();
+class HomeState extends Equatable {
+  final List<RecolectorModel>? listRecolectores;
+  final List<RecolectorModel>? listRecolectoresTemp;
+  late bool loading;
+  late bool isFilter;
+  HomeState(
+      {this.listRecolectores,
+      this.listRecolectoresTemp,
+      this.loading = false,
+      this.isFilter = false});
 
   @override
-  List<Object> get props => [];
-}
+  List<Object?> get props => [listRecolectores, loading, listRecolectoresTemp, isFilter];
 
-final class HomeInitial extends HomeState {}
+  HomeState copyWith(
+          {List<RecolectorModel>? listRecolectores,
+          bool? loading,
+          bool? isFilter,
+          List<RecolectorModel>? listRecolectoresTemp}) =>
+      HomeState(
+        isFilter:  isFilter ?? this.isFilter,
+          listRecolectoresTemp:
+              listRecolectoresTemp ?? this.listRecolectoresTemp,
+          listRecolectores: listRecolectores ?? this.listRecolectores,
+          loading: loading ?? this.loading);
+}

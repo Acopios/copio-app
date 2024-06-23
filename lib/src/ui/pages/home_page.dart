@@ -10,6 +10,7 @@ import 'package:acopios/src/ui/pages/compra_page.dart';
 import 'package:acopios/src/ui/pages/report_page.dart';
 import 'package:acopios/src/ui/widgets/btn_widget.dart';
 import 'package:acopios/src/ui/widgets/input_widget.dart';
+import 'package:acopios/src/ui/widgets/loading_widget.dart';
 import 'package:acopios/src/ui/widgets/speed_dial_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,8 +26,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _homeC = HomeCubit();
 
-  late Future<List<RecolectorModel>> _future;
-
   @override
   void initState() {
     super.initState();
@@ -34,7 +33,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   _init() async {
-    _future = _homeC.obtenerRecolectores();
+    _homeC.obtenerRecolectores();
   }
 
   @override
@@ -49,37 +48,61 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _body() => Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 30),
-            _search(),
-            const SizedBox(height: 10),
-            _listCard(),
-          ],
-        ),
+  Widget _body() => BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          return Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 30),
+                    _search(),
+                    _clearFilter(),
+                    const SizedBox(height: 10),
+                    _listCard(),
+                  ],
+                ),
+              ),
+              Visibility(visible: state.loading, child: const LoadingWidget())
+            ],
+          );
+        },
       );
 
   Widget _search() => InputWidget(
-      controller: TextEditingController(),
+      controller: _homeC.searchTxt,
       hintText: "Buscar",
       icon: Icons.search,
-      onChanged: (e) {});
+      onChanged: (e) {
+          _homeC.search(e);
+      });
+  Widget _clearFilter() => BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          return Visibility(
+            visible: state.isFilter,
+            child: Row(
+              children: [
+                const Icon(Icons.clear_outlined),
+                const SizedBox(width: 10),
+                TextButton(
+                  child: const Text("Limpiar Filtro"),
+                  onPressed: () {
+                    _homeC.deleteFilter();
+                  },
+                )
+              ],
+            ),
+          );
+        },
+      );
 
-  Widget _listCard() => Expanded(
-      child: FutureBuilder<List<RecolectorModel>>(
-          future: _future,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(
-                child: CircularProgressIndicator.adaptive(),
-              );
-            }
-            final list = snapshot.data ?? [];
-
-            if (list.isEmpty) {
-              return Center(
+  Widget _listCard() => BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          final list = state.listRecolectores ?? [];
+          if (list.isEmpty) {
+            return Expanded(
+              child: Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -97,13 +120,17 @@ class _HomePageState extends State<HomePage> {
                         enabled: true),
                   ],
                 ),
-              );
-            }
-            return ListView(
+              ),
+            );
+          }
+          return Expanded(
+            child: ListView(
               children:
                   List.generate(list.length, (index) => _card(list[index])),
-            );
-          }));
+            ),
+          );
+        },
+      );
 
   Widget _card(RecolectorModel r) => Card(
         child: Padding(
@@ -155,14 +182,16 @@ class _HomePageState extends State<HomePage> {
           Icons.history_edu_outlined,
           'Reportes',
           () {
-            Navigator.push(context, MaterialPageRoute(builder: (_)=>const ReportPage()));
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => const ReportPage()));
           },
         ),
         speedDialWidget(
           Icons.production_quantity_limits,
           'Ventas',
           () {
-            Navigator.push(context, MaterialPageRoute(builder: (_)=>const HomeVentaPage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const HomeVentaPage()));
           },
         ),
         speedDialWidget(
