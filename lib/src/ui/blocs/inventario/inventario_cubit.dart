@@ -13,7 +13,7 @@ part 'inventario_state.dart';
 class InventarioCubit extends Cubit<InventarioState> {
   final _movimientoRepo = InventarioRepo();
 
-  InventarioCubit() : super(InventarioState());
+  InventarioCubit() : super(const InventarioState());
 
   Future<List<InventarioModel>> listarInventar() async {
     final id = await SharedPreferencesManager("id").load();

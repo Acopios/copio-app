@@ -107,7 +107,7 @@ class _RegisterpageState extends State<Registerpage> {
                     obscureText: state.visible,
                     hintText: "Contraseña",
                     suffixIcon: IconButton(
-                      icon: state.visible? Icon(Icons.visibility):Icon(Icons.visibility_off),
+                      icon: state.visible? const Icon(Icons.visibility):const Icon(Icons.visibility_off),
                       onPressed: () {
                         context.read<RegisterCubit>().showPass();
                       },

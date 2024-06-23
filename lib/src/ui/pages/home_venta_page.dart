@@ -76,7 +76,7 @@ class _HomeVentaPageState extends State<HomeVentaPage> {
                       _text("Representante:", l[index].nit!),
 
                       const SizedBox(height: 10),
-                      Center(child: TextButton(child: Text("Vender"), onPressed: (){
+                      Center(child: TextButton(child: const Text("Vender"), onPressed: (){
                         Navigator.push(context, MaterialPageRoute(builder: (_)=>VentaPage(mayoristaModel: l[index])));
 
                       }),)

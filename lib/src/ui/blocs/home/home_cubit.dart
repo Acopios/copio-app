@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:acopios/src/core/shared_preferences.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';

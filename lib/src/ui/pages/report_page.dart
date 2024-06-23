@@ -309,8 +309,8 @@ class _ReportPageState extends State<ReportPage> {
                 visible: state.list == null ||  state.list!.isEmpty,
                 child: Container(
                 
-                margin: EdgeInsets.only(top: 200),
-                child: Text("Sin información"))) ,)
+                margin: const EdgeInsets.only(top: 200),
+                child: const Text("Sin información"))) ,)
               : Expanded(
                   child: ListView(
                   children: [

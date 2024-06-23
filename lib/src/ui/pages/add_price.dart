@@ -3,7 +3,6 @@ import 'package:acopios/src/ui/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../data/model/material_model.dart';
 import '../blocs/material/material_cubit.dart' as m;
 
 class AddPrice extends StatefulWidget {
@@ -116,8 +115,8 @@ class _AddPriceState extends State<AddPrice> {
                     ],
                   ),
                   Visibility(
-                    child: LoadingWidget(),
                     visible: state.loading,
+                    child: const LoadingWidget(),
                   )
                 ],
               ),

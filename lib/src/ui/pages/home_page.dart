@@ -209,7 +209,7 @@ class _HomePageState extends State<HomePage> {
             // ignore: use_build_context_synchronously
             Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (_) => LoginPage()),
+                MaterialPageRoute(builder: (_) => const LoginPage()),
                 (route) => false);
           },
         ),
