@@ -237,7 +237,6 @@ class _HomePageState extends State<HomePage> {
             await SharedPreferencesManager("token").remove();
             await SharedPreferencesManager("id").remove();
 
-            // ignore: use_build_context_synchronously
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (_) => const LoginPage()),

@@ -7,6 +7,7 @@ import 'package:acopios/src/ui/widgets/btn_widget.dart';
 import 'package:acopios/src/ui/widgets/input_widget.dart';
 import 'package:acopios/src/ui/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AgregarMayorista extends StatefulWidget {
@@ -66,8 +67,12 @@ class _AgregarMayoristaState extends State<AgregarMayorista> {
                 const SizedBox(height: 10),
                 InputWidget(
                     controller: c.nit,
+                    type: TextInputType.number,
+                    list: [
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
                     hintText: "Nit",
-                    icon: (Icons.person),
+                    icon: (Icons.card_travel_sharp),
                     onChanged: (e) {
                       c.enbaled(
                           );
@@ -85,7 +90,7 @@ class _AgregarMayoristaState extends State<AgregarMayorista> {
                 InputWidget(
                     controller: c.direccion,
                     hintText: "Dirección",
-                    icon: (Icons.person),
+                    icon: (Icons.location_city),
                     onChanged: (e) {
                       c.enbaled(
                           );
