@@ -436,7 +436,7 @@ class _ReportPageState extends State<ReportPage> {
                             });
                           }
                         },
-                        txt: "Descargar Reporte",
+                        txt: "Compartir Reporte",
                         enabled: true)
                   ],
                 ));

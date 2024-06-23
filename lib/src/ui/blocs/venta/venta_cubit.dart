@@ -6,6 +6,7 @@ import 'package:acopios/src/data/repository/inventario_repo.dart';
 import 'package:acopios/src/data/repository/material_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 import '../../../core/shared_preferences.dart';
 import '../../../data/model/inventario_model.dart';
@@ -18,11 +19,13 @@ class VentaCubit extends Cubit<VentaState> {
   final _matC = MaterialRepo();
   final _ventaC = VentaRepoitory();
   final _inven = InventarioRepo();
-  VentaCubit() : super(const VentaState());
+  VentaCubit() : super(VentaState());
 
   List<InventarioModel> l = [];
   List<int> ids = [];
-  Future<List<MaterialModel>> obtenerMateriales() async {
+  final txtSearch = TextEditingController();
+  Future<void> obtenerMateriales() async {
+    emit(state.copyWith(loading: true));
     final r = await _matC.obtenerMateriales();
     ids = [];
 
@@ -30,18 +33,19 @@ class VentaCubit extends Cubit<VentaState> {
       ids.add(i.idMaterial!);
     }
     await disponibilidad();
-    return r.body!;
+    emit(state.copyWith(list: r.body!, loading: false));
   }
 
   Future<void> disponibilidad() async {
     final id = await SharedPreferencesManager("id").load();
     l = [];
     final r = await _inven.disponibilidad(ids, int.parse(id!));
+
     l = r.body!;
   }
 
   Future<double> cantidad(int id) async {
-    final r =l
+    final r = l
             .firstWhere((element) => element.material?.idMaterial == id,
                 orElse: () => InventarioModel(
                     material: MaterialModel(idMaterial: id),
@@ -50,7 +54,7 @@ class VentaCubit extends Cubit<VentaState> {
             .cantidad ??
         0;
 
-        log("$r" );
+    log("$r");
     return r;
   }
 
@@ -119,5 +123,32 @@ class VentaCubit extends Cubit<VentaState> {
   Future<bool> realizarCompra(List<Map<String, dynamic>> data) async {
     final r = await _ventaC.registarVenta(data);
     return r;
+  }
+
+  void search(String txt) {
+    // Guardar la lista original si aún no está guardada
+    if (state.listTem == null || state.listTem!.isEmpty) {
+      emit(state.copyWith(listTem: state.list));
+    }
+    // Si el texto está vacío, restaurar la lista original
+    if (txt.isEmpty) {
+      emit(state.copyWith(list: state.listTem, isFilter: false));
+      return;
+    }
+
+    // Filtrar la lista usando coincidencias aproximadas
+    List<MaterialModel> mat = state.listTem!.where((i) {
+      final lowerTxt = txt.toLowerCase();
+      final lowerNombres = i.nombre!.toLowerCase();
+      return lowerNombres.startsWith(lowerTxt);
+    }).toList();
+
+    emit(state.copyWith(list: mat, isFilter: true));
+  }
+
+  void deleteFilter() {
+    txtSearch.clear(); // Limpiar el campo de texto de búsqueda
+    // Restaurar la lista original y limpiar el estado del filtro
+    emit(state.copyWith(list: state.listTem, listTem: [], isFilter: false));
   }
 }

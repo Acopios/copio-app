@@ -194,11 +194,11 @@ class _HomePageState extends State<HomePage> {
                 MaterialPageRoute(builder: (_) => const HomeVentaPage()));
           },
         ),
-        speedDialWidget(
-          Icons.update,
-          'Reuso',
-          () {},
-        ),
+        // speedDialWidget(
+        //   Icons.update,
+        //   'Reuso',
+        //   () {},
+        // ),
         speedDialWidget(
           Icons.exit_to_app,
           'Cerrar sesión',

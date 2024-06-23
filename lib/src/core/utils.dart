@@ -6,12 +6,13 @@ import 'package:intl/intl.dart';
 import 'package:excel/excel.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
 
 ///[currencyFormat]  genera un formato de moneda
 final NumberFormat currencyFormat =
     NumberFormat.currency(locale: 'es', symbol: '');
 
-    String messageError ="";
+String messageError = "";
 
 ///[getDate] genera un calendario
 Future<DateTime?> getDate(BuildContext context, {DateTime? date}) =>
@@ -22,6 +23,7 @@ Future<DateTime?> getDate(BuildContext context, {DateTime? date}) =>
     );
 
 ///[crearExcel] para generar y  guardar un excel
+
 Future<void> crearExcel({
   required List<CellValue> columnas,
   required List<Map<String, dynamic>> userData,
@@ -35,12 +37,13 @@ Future<void> crearExcel({
   }
 
   var excel = Excel.createExcel();
-  
+
   Sheet sheetObject = excel['Reporte'];
 
   // Agregar información del usuario
   for (var i in userData) {
-    sheetObject.appendRow([TextCellValue(i["name"]), TextCellValue(i["value"])]);
+    sheetObject
+        .appendRow([TextCellValue(i["name"]), TextCellValue(i["value"])]);
   }
 
   // Agregar columnas
@@ -55,29 +58,16 @@ Future<void> crearExcel({
     sheetObject.appendRow(item);
   }
 
-  // Obtener la ruta del directorio de descargas
-  Directory? directory = await getExternalStorageDirectory();
-  String newPath = "";
-  List<String> paths = directory!.path.split("/");
-  for (int x = 1; x < paths.length; x++) {
-    String folder = paths[x];
-    if (folder != "Android") {
-      newPath += "/$folder";
-    } else {
-      break;
-    }
-  }
-  newPath = "$newPath/Download";
-  directory = Directory(newPath);
+  // Obtener la ruta del directorio de almacenamiento temporal
+  Directory? directory = await getTemporaryDirectory();
+  String outputPath =
+      "${directory.path}/Reporte_${DateTime.now().year}_${DateTime.now().month}_${DateTime.now().day}_${DateTime.now().hour}_${DateTime.now().minute}_${DateTime.now().second}.xlsx";
 
   // Guardar el archivo Excel
-  String outputPath =
-      "${directory.path}/Reportes Acopios/${DateTime.now().year}_${DateTime.now().month}_${DateTime.now().day}_${DateTime.now().hour}_${DateTime.now().minute}_${DateTime.now().second}.xlsx";
-
-  log(outputPath, name: "url excel");
   File(outputPath)
     ..createSync(recursive: true)
     ..writeAsBytesSync(excel.encode()!);
 
-  // Mostrar un mensaje de éxito
+  // Compartir el archivo Excel
+  await Share.shareXFiles([XFile(outputPath)], text: 'Reporte generado');
 }
