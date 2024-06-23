@@ -1,4 +1,5 @@
 import 'package:acopios/src/core/shared_preferences.dart';
+import 'package:acopios/src/core/utils.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
 import 'package:dio/dio.dart';
 
@@ -41,5 +42,16 @@ class RecolectorRepo {
     } on DioException catch (_) {
       return false;
     }
+  }
+
+  Future<bool> eliminarRecolector(int id) async {
+    final url = "$urlBase/usuario/desactivar-recolector/$id";
+    final response = await Dio().get(url,
+        options: Options(headers: {
+          "AUTHORIZATION":
+              "Bearer ${await SharedPreferencesManager("token").load()}"
+        }));
+      messageError = response.data["message"];  
+    return response.data["success"];
   }
 }

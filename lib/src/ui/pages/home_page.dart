@@ -1,6 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:acopios/src/core/shared_preferences.dart';
+import 'package:acopios/src/core/utils.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
 import 'package:acopios/src/ui/blocs/home/home_cubit.dart';
+import 'package:acopios/src/ui/helpers/alert_dialog_helper.dart';
+import 'package:acopios/src/ui/helpers/dialog_helper.dart';
 import 'package:acopios/src/ui/pages/home_venta_page.dart';
 import 'package:acopios/src/ui/pages/login_page.dart';
 import 'package:acopios/src/ui/pages/inventario_page.dart';
@@ -75,7 +80,7 @@ class _HomePageState extends State<HomePage> {
       hintText: "Buscar",
       icon: Icons.search,
       onChanged: (e) {
-          _homeC.search(e);
+        _homeC.search(e);
       });
   Widget _clearFilter() => BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
@@ -136,7 +141,33 @@ class _HomePageState extends State<HomePage> {
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: ListTile(
-            leading: const Icon(Icons.account_circle_outlined),
+            leading: IconButton(
+                onPressed: () {
+                  dialogButton(
+                      context: context,
+                      child: Column(
+                        children: [
+                          const ListTile(
+                              leading: Icon(Icons.edit), title: Text("Editar")),
+                          ListTile(
+                              onTap: () async {
+                                Navigator.pop(context);
+                                final rr =
+                                    await _homeC.eliminarUser(r.idRecolector!);
+                                if (rr) {
+                                  info(context, messageError,
+                                      () => Navigator.pop(context));
+                                  _init();
+                                }
+                              },
+                              leading: const Icon(Icons.delete),
+                              title: const Text("Eliminar Recolector")),
+                          const SizedBox(height: 30),
+                        ],
+                      ),
+                      isScrollControlled: false);
+                },
+                icon: const Icon(Icons.account_circle_outlined)),
             title: Text("${r.nombres} ${r.apellidos}"),
             subtitle: Text(r.identificacion!),
             trailing: TextButton(

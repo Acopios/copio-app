@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:acopios/src/core/shared_preferences.dart';
 import 'package:acopios/src/data/model/recolector_model.dart';
 import 'package:acopios/src/data/repository/recolector_repository.dart';
@@ -53,6 +55,14 @@ void search(String txt) {
 void deleteFilter() {
   searchTxt.clear();
   emit(state.copyWith(listRecolectores: state.listRecolectoresTemp, listRecolectoresTemp: [], isFilter: false));
+}
+
+Future<bool> eliminarUser(int id)async{
+  emit(state.copyWith(loading: true));
+  final r = await _recolectorRepo.eliminarRecolector(id);
+  emit(state.copyWith(loading: false));
+  return r;
+
 }
 
 }

@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:acopios/src/core/utils.dart';
 import 'package:acopios/src/ui/blocs/mayorista/mayorista_cubit.dart';
 import 'package:acopios/src/ui/helpers/alert_dialog_helper.dart';
 import 'package:acopios/src/ui/widgets/btn_widget.dart';
@@ -96,7 +97,7 @@ class _AgregarMayoristaState extends State<AgregarMayorista> {
                       if (r) {
                         Navigator.pop(context);
                       } else {
-                        info(context, "No fue posible clear el mayorista", () {
+                        info(context, messageError, () {
                           Navigator.pop(context);
                         });
                       }

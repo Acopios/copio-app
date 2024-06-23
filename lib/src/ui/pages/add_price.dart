@@ -1,6 +1,7 @@
 import 'package:acopios/src/ui/widgets/input_widget.dart';
 import 'package:acopios/src/ui/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../blocs/material/material_cubit.dart' as m;
@@ -77,6 +78,10 @@ class _AddPriceState extends State<AddPrice> {
                                     width: 100,
                                     child: InputWidget(
                                       controller: _controllers[index]!,
+                                      type: TextInputType.number,
+                                      list: [
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ],
                                       hintText: "2.00",
                                       icon: Icons.monetization_on,
                                       onChanged: (value) {

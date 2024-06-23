@@ -47,4 +47,12 @@ class HomeMayoristaCubit extends Cubit<HomeMayoristaState> {
     // Restaurar la lista original y limpiar el estado del filtro
     emit(state.copyWith(list: state.listTemp, listTemp: [], isFilter: false));
   }
+
+    Future<bool> eliminarMayorista(int id)async{
+  emit(state.copyWith(loading: true));
+  final r = await _mayorista.eliminarMayorista(id);
+  emit(state.copyWith(loading: false));
+  return r;
+
+}
 }

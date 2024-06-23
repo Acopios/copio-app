@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 
 import '../../core/shared_preferences.dart';
 import '../../core/url.dart';
+import '../../core/utils.dart';
 import '../model/response_base_model.dart';
 
 class MayoristaRepository {
@@ -16,7 +17,8 @@ class MayoristaRepository {
                 "Bearer ${await SharedPreferencesManager("token").load()}"
           }));
       return response.data["success"];
-    } catch (e) {
+    } on DioException catch (_)  {
+        messageError = _.response!.data["body"]["message"];
       return false;
     }
   }
@@ -41,5 +43,15 @@ class MayoristaRepository {
     } on DioException catch (_) {
       return ResponseBaseModel<List<MayoristaModel>>.fromJson({});
     }
+  }
+    Future<bool> eliminarMayorista(int id) async {
+    final url = "$urlBase/mayorista/desactivar-mayorista/$id";
+    final response = await Dio().get(url,
+        options: Options(headers: {
+          "AUTHORIZATION":
+              "Bearer ${await SharedPreferencesManager("token").load()}"
+        }));
+      messageError = response.data["message"];  
+    return response.data["success"];
   }
 }

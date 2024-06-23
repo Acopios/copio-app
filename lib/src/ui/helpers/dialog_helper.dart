@@ -5,6 +5,7 @@ dialogButton({required BuildContext context, required Widget child,required bool
         context: context,
         isScrollControlled: isScrollControlled,
         builder: (_) => Column(
+          mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                     alignment: Alignment.centerRight,
