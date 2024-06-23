@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:acopios/src/data/model/inventario_model.dart';
 import 'package:acopios/src/ui/blocs/inventario/inventario_cubit.dart';
+import 'package:acopios/src/ui/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/input_widget.dart';
@@ -18,8 +18,6 @@ class _InventarioPageState extends State<InventarioPage> {
 
   final _movC = InventarioCubit();
 
-  late Future<List<InventarioModel>> _future;
-
   @override
   void initState() {
     super.initState();
@@ -27,7 +25,7 @@ class _InventarioPageState extends State<InventarioPage> {
   }
 
   _init() {
-    _future = _movC.listarInventar();
+    _movC.listarInventar();
   }
 
   @override
@@ -38,54 +36,85 @@ class _InventarioPageState extends State<InventarioPage> {
       child: SafeArea(
           child: Scaffold(
         appBar: AppBar(elevation: 8, title: const Text("Inventario")),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              _search(),
-              const SizedBox(height: 10),
-              Expanded(
-                  child: FutureBuilder<List<InventarioModel>>(
-                      future: _future,
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const Center(
-                            child: CircularProgressIndicator.adaptive(),
-                          );
-                        }
-                        final list = snapshot.data ?? [];
-
-                        if (list.isEmpty) {
-                          return const Center(
-                            child: Text("Sin registros aun"),
-                          );
-                        }
-                        return ListView(
-                          children: List.generate(
-                            list.length,
-                            (index) => SizedBox(
-                              width: _size.width,
-                              child: ListTile(
-                                title: Text(list[index].material!.nombre!),
-                                subtitle: Text("Dispinibilidad: ${list[index].cantidad} Kg"),
+        body: BlocBuilder<InventarioCubit, InventarioState>(
+          builder: (context, state) {
+            return Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      _search(),
+                      _clearFilter(),
+                      const SizedBox(height: 10),
+                      BlocBuilder<InventarioCubit, InventarioState>(
+                        builder: (context, state) {
+                          final list = state.list ?? [];
+                          if (list.isEmpty) {
+                            return const Expanded(
+                              child: Center(
+                                child: Text("Sin registros aun"),
+                              ),
+                            );
+                          }
+                          return Expanded(
+                            child: ListView(
+                              children: List.generate(
+                                list.length,
+                                (index) => SizedBox(
+                                  width: _size.width,
+                                  child: ListTile(
+                                    title: Text(list[index].material!.nombre!),
+                                    subtitle: Text(
+                                        "Dispinibilidad: ${list[index].cantidad} Kg"),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      }))
-            ],
-          ),
+                          );
+                        },
+                      )
+                    ],
+                  ),
+                ),
+                Visibility(
+                  visible: state.loading,
+                  child: const LoadingWidget(),
+                )
+              ],
+            );
+          },
         ),
       )),
     );
   }
 
   Widget _search() => InputWidget(
-      controller: TextEditingController(),
+      controller: _movC.txtSearch,
       hintText: "Buscar",
       icon: Icons.search,
-      onChanged: (e) {});
+      onChanged: (e) {
+        _movC.search(e);
+      });
 
-   
+  Widget _clearFilter() => BlocBuilder<InventarioCubit, InventarioState>(
+        builder: (context, state) {
+          return Visibility(
+            visible: state.isFilter,
+            child: Row(
+              children: [
+                const Icon(Icons.clear_outlined),
+                const SizedBox(width: 10),
+                TextButton(
+                  child: const Text("Limpiar Filtro"),
+                  onPressed: () {
+                    _movC.deleteFilter();
+                  },
+                )
+              ],
+            ),
+          );
+        },
+      );
 }

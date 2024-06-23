@@ -82,7 +82,7 @@ class MaterialCubit extends Cubit<MaterialState> {
     List<MaterialModel> mat = state.listTemp!.where((i) {
       final lowerTxt = txt.toLowerCase();
       final lowerNombres = i.nombre!.toLowerCase();
-      return lowerNombres.contains(lowerTxt);
+      return lowerNombres.startsWith(lowerTxt);
     }).toList();
 
     emit(state.copyWith(list: mat, isFilter: true));

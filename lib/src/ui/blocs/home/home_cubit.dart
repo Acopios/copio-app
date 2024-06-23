@@ -51,8 +51,7 @@ void search(String txt) {
 
 
 void deleteFilter() {
-  searchTxt.clear(); // Limpiar el campo de texto de búsqueda
-  // Restaurar la lista original y limpiar el estado del filtro
+  searchTxt.clear();
   emit(state.copyWith(listRecolectores: state.listRecolectoresTemp, listRecolectoresTemp: [], isFilter: false));
 }
 

@@ -30,10 +30,7 @@ class _VentaPageState extends State<VentaPage> {
     super.initState();
     _cubit = VentaCubit();
     _future = _cubit.obtenerMateriales();
-    
   }
-
- 
 
   @override
   Widget build(BuildContext context) {
@@ -42,10 +39,7 @@ class _VentaPageState extends State<VentaPage> {
       create: (context) => _cubit,
       child: SafeArea(
           child: Scaffold(
-        appBar: AppBar(
-          elevation: 8,
-          title: const Text("Nueva venta"),
-        ),
+        appBar: AppBar(elevation: 8, title: const Text("Nueva venta")),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: FutureBuilder<List<MaterialModel>>(
