@@ -61,21 +61,17 @@ class _AgregarMayoristaState extends State<AgregarMayorista> {
                     hintText: "Nombre",
                     icon: (Icons.person),
                     onChanged: (e) {
-                      c.enbaled(
-                          );
+                      c.enbaled();
                     }),
                 const SizedBox(height: 10),
                 InputWidget(
                     controller: c.nit,
                     type: TextInputType.number,
-                    list: [
-                      FilteringTextInputFormatter.digitsOnly
-                    ],
+                    list: [FilteringTextInputFormatter.digitsOnly],
                     hintText: "Nit",
                     icon: (Icons.card_travel_sharp),
                     onChanged: (e) {
-                      c.enbaled(
-                          );
+                      c.enbaled();
                     }),
                 const SizedBox(height: 10),
                 InputWidget(
@@ -83,8 +79,7 @@ class _AgregarMayoristaState extends State<AgregarMayorista> {
                     hintText: "Representante",
                     icon: (Icons.person),
                     onChanged: (e) {
-                      c.enbaled(
-                          );
+                      c.enbaled();
                     }),
                 const SizedBox(height: 10),
                 InputWidget(
@@ -92,8 +87,7 @@ class _AgregarMayoristaState extends State<AgregarMayorista> {
                     hintText: "Dirección",
                     icon: (Icons.location_city),
                     onChanged: (e) {
-                      c.enbaled(
-                          );
+                      c.enbaled();
                     }),
                 const Expanded(child: SizedBox()),
                 BtnWidget(

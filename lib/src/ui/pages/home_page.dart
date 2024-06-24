@@ -13,6 +13,7 @@ import 'package:acopios/src/ui/pages/my_price_page.dart';
 import 'package:acopios/src/ui/pages/reclector_page.dart';
 import 'package:acopios/src/ui/pages/compra_page.dart';
 import 'package:acopios/src/ui/pages/report_page.dart';
+import 'package:acopios/src/ui/pages/reuso_page.dart';
 import 'package:acopios/src/ui/widgets/btn_widget.dart';
 import 'package:acopios/src/ui/widgets/input_widget.dart';
 import 'package:acopios/src/ui/widgets/loading_widget.dart';
@@ -225,11 +226,14 @@ class _HomePageState extends State<HomePage> {
                 MaterialPageRoute(builder: (_) => const HomeVentaPage()));
           },
         ),
-        // speedDialWidget(
-        //   Icons.update,
-        //   'Reuso',
-        //   () {},
-        // ),
+        speedDialWidget(
+          Icons.update,
+          'Reuso',
+          () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => ReusoPage()));
+          },
+        ),
         speedDialWidget(
           Icons.exit_to_app,
           'Cerrar sesión',
