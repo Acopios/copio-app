@@ -61,7 +61,7 @@ class PrecioModel {
     });
 
     factory PrecioModel.fromJson(Map<String, dynamic> json) => PrecioModel(
-        id: json["id"],
+        id: json["id"] ?? -1,
         idMaterial: IdMaterial.fromJson(json["material"]),
         recolectorModel:json["recolector"]==null?RecolectorModel.fromJson({}): RecolectorModel.fromJson(json["recolector"]) ,
         fechaAsigna: json["fechaAsigna"]==null?DateTime.now(): DateTime.parse(json["fechaAsigna"] ),

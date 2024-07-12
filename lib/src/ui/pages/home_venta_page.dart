@@ -105,9 +105,22 @@ class _HomeVentaPageState extends State<HomeVentaPage> {
                               context: context,
                               child: Column(
                                 children: [
-                                  const ListTile(
-                                      leading: Icon(Icons.edit),
-                                      title: Text("Editar")),
+                                  ListTile(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) =>
+                                                    AgregarMayorista(
+                                                      isEdit: true,
+                                                      mayoristaModel: l[index],
+                                                    ))).then((value) {
+                                          _init();
+                                          setState(() {});
+                                        });
+                                      },
+                                      leading: const Icon(Icons.edit),
+                                      title: const Text("Editar")),
                                   ListTile(
                                       onTap: () async {
                                         Navigator.pop(context);
@@ -167,7 +180,10 @@ class _HomeVentaPageState extends State<HomeVentaPage> {
               text: text1,
               style: const TextStyle(
                   color: Colors.black, fontWeight: FontWeight.bold)),
-          TextSpan(text: " $txt2", style: const TextStyle(color: Colors.black)),
+          TextSpan(
+              text: " $txt2",
+              style: const TextStyle(
+                  color: Colors.black, overflow: TextOverflow.ellipsis)),
         ]),
       );
   Widget _option() => SpeedDial(children: [

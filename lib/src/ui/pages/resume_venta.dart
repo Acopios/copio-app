@@ -119,7 +119,7 @@ class _ResumenVentaPageState extends State<ResumenVentaPage> {
                                     ctrl2.text = mapData![index]["precioUnidad"]
                                         .toString();
                                     dialogButton(
-                                        isScrollControlled: false,
+                                        isScrollControlled: true,
                                         context: context,
                                         child: Padding(
                                           padding: const EdgeInsets.all(8.0),

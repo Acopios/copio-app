@@ -1,4 +1,3 @@
-
 import 'package:acopios/src/data/dto/asignar_precio_dto.dart';
 import 'package:acopios/src/data/model/material_model.dart';
 import 'package:acopios/src/data/model/precio_material.dart';
@@ -46,7 +45,7 @@ class MaterialCubit extends Cubit<MaterialState> {
     final id = await SharedPreferencesManager("id").load();
     final r = await _material.obtenerPrecioMateriales(int.parse(id!));
 
-    return r.body!;
+    return r.body ?? [];
   }
 
   Future<bool> asignarPrecio(MaterialModel m, int idA, String precio) async {
@@ -69,7 +68,6 @@ class MaterialCubit extends Cubit<MaterialState> {
   void search(String txt) {
     // Guardar la lista original si aún no está guardada
     if (state.listTemp == null || state.listTemp!.isEmpty) {
-
       emit(state.copyWith(listTemp: state.list));
     }
     // Si el texto está vacío, restaurar la lista original
@@ -93,4 +91,6 @@ class MaterialCubit extends Cubit<MaterialState> {
     // Restaurar la lista original y limpiar el estado del filtro
     emit(state.copyWith(list: state.listTemp, listTemp: [], isFilter: false));
   }
+
+ 
 }

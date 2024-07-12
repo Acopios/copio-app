@@ -13,10 +13,11 @@ part 'compra_state.dart';
 class CompraCubit extends Cubit<CompraState> {
   final _compraRepor = CompraRepo();
 
-  CompraCubit() : super(const CompraState());
+  CompraCubit() : super( CompraState());
 
   final txt = TextEditingController();
   final txtC = TextEditingController();
+  final searchTxt = TextEditingController();
 
   void updateMaterial(MaterialCustom m) {
     // Inicializa una lista vacía de materiales
@@ -87,8 +88,40 @@ class CompraCubit extends Cubit<CompraState> {
   }
 
   Future<List<PrecioModel>> precioAsignacion(int id) async {
-    final r = await _compraRepor.precioPorAsignacion(id);
-
+    emit(state.copyWith(loading: true, precios: []));
+        final idM = await SharedPreferencesManager("id").load();
+    final r = await _compraRepor.precioPorAsignacion(id, int.parse(idM!));
+    emit(state.copyWith(loading: false, isFilter: false,precios: r.body ?? []));
     return r.body!;
   }
+
+void search(String txt) {
+  // Guardar la lista original si aún no está guardada
+  if (state.preciosTemp == null || state.preciosTemp!.isEmpty) {
+    emit(state.copyWith(preciosTemp: state.precios));
+  }
+  
+  // Si el texto está vacío, restaurar la lista original
+  if (txt.isEmpty) {
+    emit(state.copyWith(precios: state.preciosTemp, isFilter: false));
+    return;
+  }
+
+  // Filtrar la lista usando coincidencias aproximadas
+  List<PrecioModel> reco = state.preciosTemp!
+      .where((i) {
+        final lowerTxt = txt.toLowerCase();
+        final lowerNombres = i.idMaterial.nombre.toLowerCase();
+        return lowerNombres.startsWith(lowerTxt);
+      })
+      .toList();
+
+  emit(state.copyWith(precios: reco, isFilter: true));
+}
+
+
+void deleteFilter() {
+  searchTxt.clear();
+  emit(state.copyWith(precios: state.preciosTemp, preciosTemp: [], isFilter: false));
+}
 }

@@ -120,4 +120,33 @@ class ReporteRepository {
       return ResponseBaseModel<List<PrecioModel>>.fromJson({});
     }
   }
+
+    Future<ResponseBaseModel<List<PrecioModel>>> reportReuso(
+      {required int idM,
+      required DateTime fechaI,
+      required DateTime fechaF}) async {
+    try {
+      final url = "$urlBase/reporte/reuso/$idM";
+
+      final response = await Dio().get(url,
+          queryParameters: {
+            "fechaInicio": fechaI.toIso8601String(),
+            "fechaFin": fechaF.toIso8601String()
+          },
+          options: Options(
+            headers: {
+              "AUTHORIZATION":
+                  "Bearer ${await SharedPreferencesManager("token").load()}"
+            },
+          ));
+
+      return ResponseBaseModel<List<PrecioModel>>(
+          body: List<PrecioModel>.from(
+              response.data["body"]!.map((x) => PrecioModel.fromJson(x))),
+          message: response.data["message"],
+          success: response.data["success"]);
+    } on DioException catch (_) {
+      return ResponseBaseModel<List<PrecioModel>>.fromJson({});
+    }
+  }
 }

@@ -6,6 +6,9 @@ class CrearMayoristaDto {
   final String representante;
   final String nit;
   final String direccion;
+  final String telefono;
+  final String correo;
+  final int? idMayorista;
 
   CrearMayoristaDto({
     required this.nombre,
@@ -14,6 +17,9 @@ class CrearMayoristaDto {
     required this.fechaActualizacion,
     required this.representante,
     required this.nit,
+    required this.correo,
+    required this.telefono,
+    this.idMayorista,
     required this.direccion,
   });
 
@@ -21,9 +27,13 @@ class CrearMayoristaDto {
         "nombre": nombre,
         "representante": representante,
         "nit": nit,
+        "idMayorista":idMayorista,
         "direccion": direccion,
         "idMinorista": idMinorista,
         "fechaCreacion": fechaCreacion,
         "fechaActualizacion": fechaActualizacion,
+        "correo":correo,
+        "telefono":telefono
+
       };
 }

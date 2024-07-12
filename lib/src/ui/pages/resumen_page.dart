@@ -126,7 +126,7 @@ class _ResumenPagState extends State<ResumenPage> {
                                     ctrl2.text = mapData![index]["precioUnidad"]
                                         .toString();
                                     dialogButton(
-                                        isScrollControlled: false,
+                                        isScrollControlled: true,
                                         context: context,
                                         child: Padding(
                                           padding: const EdgeInsets.all(8.0),

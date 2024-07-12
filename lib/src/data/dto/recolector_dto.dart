@@ -6,12 +6,14 @@ class RecolectorDto {
   final String identificacion;
   final int idMinorista;
   final int idListaPrecios;
+  final int?idRecolector;
 
   RecolectorDto(
       {required this.nombres,
       required this.apellidos,
       required this.direccion,
       required this.idListaPrecios,
+      this.idRecolector,
       required this.telefono,
       required this.identificacion,
       required this.idMinorista});
@@ -24,5 +26,6 @@ class RecolectorDto {
         "telefono": telefono,
         "identificacion": identificacion,
         "idMinorista": idMinorista,
+        "idRecolector":idRecolector
       };
 }

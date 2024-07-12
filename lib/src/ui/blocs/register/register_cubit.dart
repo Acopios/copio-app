@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:acopios/src/data/dto/registro_dto.dart';
 import 'package:acopios/src/data/repository/registro_repository.dart';
 import 'package:bcrypt/bcrypt.dart';
@@ -33,6 +35,8 @@ class RegisterCubit extends Cubit<RegisterState> {
 
   Future<bool> registro() async {
     emit(state.copyWith(loading: true));
+
+    String salt = BCrypt.gensalt(logRounds: 4,prefix: "\$2a",secureRandom: Random(4));
 
     final String hashed = BCrypt.hashpw(contra.text, BCrypt.gensalt());
 

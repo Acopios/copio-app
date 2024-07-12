@@ -22,9 +22,9 @@ class CompraRepo {
   }
 
   Future<ResponseBaseModel<List<PrecioModel>>> precioPorAsignacion(
-      int id) async {
+      int id, int idM) async {
     try {
-      final url = "$urlBase/precio/precio-reco-listar/$id";
+      final url = "$urlBase/precio/precio-reco-listar/$id/$idM";
 
       final response = await Dio().get(url,
           options: Options(headers: {

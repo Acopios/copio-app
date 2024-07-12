@@ -21,7 +21,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(loading: true, listRecolectores: []));
     final r = await _recolectorRepo.obtenerRecolectores(int.parse(id!));
     emit(state.copyWith(
-        listRecolectores: r.body!, loading: false, isFilter: false));
+        listRecolectores: r.body ??[], loading: false, isFilter: false));
     return r.body!;
   }
 
@@ -43,7 +43,7 @@ void search(String txt) {
         final lowerTxt = txt.toLowerCase();
         final lowerNombres = i.nombres?.toLowerCase() ?? "";
         final lowerApellidos = i.apellidos?.toLowerCase() ?? "";
-        return lowerNombres.contains(lowerTxt) || lowerApellidos.contains(lowerTxt);
+        return lowerNombres.startsWith(lowerTxt) || lowerApellidos.startsWith(lowerTxt);
       })
       .toList();
 

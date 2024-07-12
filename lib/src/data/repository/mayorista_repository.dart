@@ -7,7 +7,7 @@ import '../../core/utils.dart';
 import '../model/response_base_model.dart';
 
 class MayoristaRepository {
-  Future<bool> registarCompra(Map<String, dynamic> data) async {
+  Future<bool> crearM(Map<String, dynamic> data) async {
     try {
       const url = "$urlBase/mayorista/crear";
       final response = await Dio().post(url,

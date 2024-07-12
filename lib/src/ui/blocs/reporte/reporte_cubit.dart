@@ -43,6 +43,15 @@ class ReporteCubit extends Cubit<ReporteState> {
     emit(state.copyWith(list: r.body, loadingReport: false));
   }
 
+    Future<void> obtenerReporteReuso() async {
+    emit(state.copyWith(loadingReport: true));
+    final id = await SharedPreferencesManager("id").load();
+    final r = await _reporteR.reportReuso(
+        idM: int.parse(id!), fechaI: state.fechaI!, fechaF: state.fechaF!);
+
+    emit(state.copyWith(list: r.body, loadingReport: false));
+  }
+
   Future<void> obtenerReporteVenta() async {
     emit(state.copyWith(loadingReport: true));
     final id = await SharedPreferencesManager("id").load();
@@ -254,6 +263,46 @@ class ReporteCubit extends Cubit<ReporteState> {
         TextCellValue(i.fechaAlimenta!.toIso8601String()),
         TextCellValue(i.cantidad.toString()),
         TextCellValue(i.precioUnidad.toString()),
+        TextCellValue(i.total.toString())
+      ]);
+    }
+    try {
+      await crearExcel(columnas: col, userData: userData, body: body);
+      emit(state.copyWith(loadingReport: false));
+
+      return true;
+    } catch (e) {
+      emit(state.copyWith(loadingReport: false));
+
+      return false;
+    }
+  }
+   Future<bool> crearReporteReuso(
+      MayoristaModel recolectorModel) async {
+    emit(state.copyWith(loadingReport: true));
+
+    final list = state.list;
+    List<CellValue> col = const [
+      TextCellValue("Material"),
+      TextCellValue("Codigo"),
+      TextCellValue("Fecha Ingreso"),
+      TextCellValue("Cantidad"),
+      TextCellValue("Precio Unidad"),
+      TextCellValue("Total")
+    ];
+
+    List<Map<String, dynamic>> userData = [
+      {"name": "Nombre", "value": recolectorModel.nombre!},
+    ];
+    List<List<TextCellValue>> body = [];
+
+    for (var i in list!) {
+      body.add([
+        TextCellValue(i.idMaterial.nombre),
+        TextCellValue(i.idMaterial.codigo),
+        TextCellValue(i.fechaAlimenta!.toIso8601String()),
+        TextCellValue(i.cantidad.toString()),
+        TextCellValue(i.valor.toString()),
         TextCellValue(i.total.toString())
       ]);
     }

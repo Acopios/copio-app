@@ -154,6 +154,12 @@ class _ReportPageState extends State<ReportPage> {
                     _reporteCubitM.clearR2();
                     _reporteCubitM.obtenerMayoristas();
                   }
+                  else if (newValue == 'r') {
+                    context.read<ReporteCubit>().showDate(true);
+                    _selectedItemReco = null;
+                    _selectedItemMayo = null;
+                    _reporteCubitM.clearR2();
+                  }
                 });
               },
             ),
@@ -286,6 +292,10 @@ class _ReportPageState extends State<ReportPage> {
                       _selectedItemMayo!.idMayorista!);
                   context.read<ReporteCubit>().showDate(false);
                 }
+                if (_selectedItem == "r") {
+                  _reporteCubitM.obtenerReporteReuso();
+                  context.read<ReporteCubit>().showDate(false);
+                }
               },
               txt: "Generar Reporte",
               enabled: true);
@@ -305,12 +315,13 @@ class _ReportPageState extends State<ReportPage> {
   Widget _listReport() => BlocBuilder<ReporteCubit, ReporteState>(
         builder: (context, state) {
           return state.list == null || state.list!.isEmpty
-              ?  SizedBox(child: Visibility(
-                visible: state.list == null ||  state.list!.isEmpty,
-                child: Container(
-                
-                margin: const EdgeInsets.only(top: 200),
-                child: const Text("Sin información"))) ,)
+              ? SizedBox(
+                  child: Visibility(
+                      visible: state.list == null || state.list!.isEmpty,
+                      child: Container(
+                          margin: const EdgeInsets.only(top: 200),
+                          child: const Text("Sin información"))),
+                )
               : Expanded(
                   child: ListView(
                   children: [
@@ -322,7 +333,6 @@ class _ReportPageState extends State<ReportPage> {
                         txt3: "Precio KG",
                         txt4: "Total"),
                     const Divider(),
-
                     ...List.generate(
                         state.list!.length,
                         (index) => Column(
@@ -331,7 +341,9 @@ class _ReportPageState extends State<ReportPage> {
                                     txt1: state.list![index].idMaterial.nombre,
                                     txt2:
                                         state.list![index].cantidad!.toString(),
-                                    txt3: currencyFormat.format(state
+                                    txt3: _selectedItem=="r"?currencyFormat.format(state
+                                        .list![index].valor
+                                        .toInt()): currencyFormat.format(state
                                         .list![index].precioUnidad!
                                         .toInt()),
                                     txt4: currencyFormat.format(

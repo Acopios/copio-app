@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:acopios/src/core/shared_preferences.dart';
 import 'package:acopios/src/data/dto/login_dto.dart';
 import 'package:acopios/src/data/repository/login_repository.dart';
+import 'package:bcrypt/bcrypt.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +27,9 @@ class LoginCubit extends Cubit<LoginState> {
 
   ///-----------peticiones-----------
   Future<bool> sendInfo() async {
+
+        final String hashed = BCrypt.hashpw(password.text, BCrypt.gensalt());
+
     final r = await _repoLogin
         .login(LoginDto(usuario: user.text, contrasenia: password.text));
     if (r.success!) {
@@ -48,6 +54,16 @@ class LoginCubit extends Cubit<LoginState> {
 
   void showPass() {
     emit(state.copyWith(visible: !state.visible));
+  }
+
+  Future<bool> recuperar(String txt1, String tx2) async {
+    String salt = BCrypt.gensalt(logRounds: 4,prefix: "\$2a",secureRandom: Random(4));
+
+    return await _repoLogin.recuperar({
+      "usuario": txt1,
+      "contrasenia": BCrypt.hashpw(tx2, BCrypt.gensalt()),
+      "fechaActualizacion": DateTime.now().toIso8601String()
+    });
   }
 
   ///-----------otros-----------

@@ -2,7 +2,6 @@
 
 import 'package:acopios/src/core/utils.dart';
 import 'package:acopios/src/ui/blocs/reuso/reuso_cubit.dart';
-import 'package:acopios/src/ui/blocs/venta/venta_cubit.dart';
 import 'package:acopios/src/ui/helpers/dialog_helper.dart';
 import 'package:acopios/src/ui/pages/home_page.dart';
 import 'package:acopios/src/ui/widgets/btn_widget.dart';
@@ -117,7 +116,7 @@ class _ResumenReusoPageState extends State<ResumenReuoPage> {
                                     ctrl2.text = mapData![index]["precioUnidad"]
                                         .toString();
                                     dialogButton(
-                                        isScrollControlled: false,
+                                        isScrollControlled: true,
                                         context: context,
                                         child: Padding(
                                           padding: const EdgeInsets.all(8.0),

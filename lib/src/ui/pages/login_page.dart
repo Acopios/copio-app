@@ -3,6 +3,7 @@
 import 'package:acopios/src/ui/blocs/login/login_cubit.dart';
 import 'package:acopios/src/ui/helpers/alert_dialog_helper.dart';
 import 'package:acopios/src/ui/pages/home_page.dart';
+import 'package:acopios/src/ui/pages/recuperar_contrase%C3%B1a.dart';
 import 'package:acopios/src/ui/pages/register_page.dart';
 import 'package:acopios/src/ui/views/logo_view.dart';
 import 'package:acopios/src/ui/widgets/btn_widget.dart';
@@ -53,28 +54,30 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _body() => Column(
-        children: [
-          _space(_size.height * .1),
-          Center(child: logoView(heigth: _size.height * .2)),
-          _space(_size.height * .018),
-          Text("Inciar Sesión",
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: _size.height * .02)),
-          _form(),
-          _btn(),
-          _space(30),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: ((_) => const Registerpage())));
-            },
-            child: const Text(
-              "Crear cuenta",
-              style: TextStyle(decoration: TextDecoration.underline),
+  Widget _body() => SingleChildScrollView(
+        child: Column(
+          children: [
+            _space(_size.height * .1),
+            Center(child: logoView(heigth: _size.height * .2)),
+            _space(_size.height * .018),
+            Text("Inciar Sesión",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: _size.height * .02)),
+            _form(),
+            _btn(),
+            _space(30),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: ((_) => const Registerpage())));
+              },
+              child: const Text(
+                "Crear cuenta",
+                style: TextStyle(decoration: TextDecoration.underline),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
 
   Widget _form() => Container(
@@ -85,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
             InputWidget(
                 controller: _cubit.user,
                 hintText: "Usuario",
-                icon: Icons.person,
+                icon: Icons.person_2_outlined,
                 onChanged: (e) {
                   _cubit.isEnabled();
                 }),
@@ -96,24 +99,34 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _cubit.password,
                     hintText: "Contraseña",
                     obscureText: state.visible,
-                      suffixIcon: IconButton(
-                      icon: state.visible? const Icon(Icons.visibility):const Icon(Icons.visibility_off),
+                    suffixIcon: IconButton(
+                      icon: state.visible
+                          ? const Icon(Icons.visibility)
+                          : const Icon(Icons.visibility_off),
                       onPressed: () {
                         context.read<LoginCubit>().showPass();
                       },
                     ),
-                    icon: Icons.lock,
+                    icon: Icons.lock_clock_outlined,
                     onChanged: (e) {
                       _cubit.isEnabled();
                     });
               },
             ),
             _space(10),
-            Container(
-              alignment: Alignment.centerLeft,
-              child: const Text(
-                "Olvide mi contraseña",
-                style: TextStyle(decoration: TextDecoration.underline),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const RecuperarContrasenia()));
+              },
+              child: Container(
+                alignment: Alignment.centerLeft,
+                child: const Text(
+                  "Olvide mi contraseña",
+                  style: TextStyle(decoration: TextDecoration.underline),
+                ),
               ),
             ),
           ],

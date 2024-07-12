@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:acopios/src/ui/blocs/inventario/inventario_cubit.dart';
+import 'package:acopios/src/ui/pages/add_material.dart';
+import 'package:acopios/src/ui/widgets/btn_widget.dart';
 import 'package:acopios/src/ui/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,9 +54,22 @@ class _InventarioPageState extends State<InventarioPage> {
                         builder: (context, state) {
                           final list = state.list ?? [];
                           if (list.isEmpty) {
-                            return const Expanded(
+                            return Expanded(
                               child: Center(
-                                child: Text("Sin registros aun"),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text("Sin registros aun"),
+                                    const SizedBox(height: 20),
+                                    BtnWidget(
+                                        action: () {
+                                          Navigator.push(context, MaterialPageRoute(builder: (_)=>AddMaterial()));
+                                        },
+                                        txt: "Crear inventario",
+                                        enabled: true)
+                                  ],
+                                ),
                               ),
                             );
                           }

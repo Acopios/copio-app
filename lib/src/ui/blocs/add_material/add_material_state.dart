@@ -1,15 +1,13 @@
-// ignore_for_file: must_be_immutable
+part of 'add_material_cubit.dart';
 
-part of 'reuso_cubit.dart';
-
- class ReusoState extends Equatable {
- final List<MaterialCustom>? materiales;
+ class AddMaterialState extends Equatable {
+  final List<MaterialCustom>? materiales;
   final List<MaterialModel>? list;
   final List<MaterialModel>? listTem;
   late bool loading;
   late bool isFilter;
 
-  ReusoState(
+  AddMaterialState(
       {this.materiales,
       this.list,
       this.listTem,
@@ -19,17 +17,19 @@ part of 'reuso_cubit.dart';
   @override
   List<Object?> get props => [materiales, listTem, list, isFilter, loading];
 
-  ReusoState copyWith(
+  AddMaterialState copyWith(
           {List<MaterialCustom>? materiales,
           List<MaterialModel>? listTem,
           List<MaterialModel>? list,
           bool? loading,
           bool? isFilter}) =>
-      ReusoState(
+      AddMaterialState(
           materiales: materiales ?? this.materiales,
           isFilter: isFilter ?? this.isFilter,
           list: list ?? this.list,
           listTem: listTem ?? this.listTem,
           loading: loading ?? this.loading);
 }
+
+
 

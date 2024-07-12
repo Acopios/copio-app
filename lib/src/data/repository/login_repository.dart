@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:acopios/src/core/utils.dart';
 import 'package:dio/dio.dart';
 
@@ -20,6 +22,17 @@ class LoginRepository {
     } on DioException catch (_) {
        messageError = _.response!.data["body"]["message"];
       return ResponseBaseModel<LoginModel>.fromJson({});
+    }
+  }
+  Future<bool> recuperar(Map<String, dynamic> dto) async {
+    try {
+      const url = "$urlBase/autenticacion/recuperar";
+      final response = await Dio().post(url, data: dto);
+log("$response");
+      return response.data["success"];
+    } on DioException catch (_) {
+       messageError = _.response!.data["body"]["message"];
+      return false;
     }
   }
 }

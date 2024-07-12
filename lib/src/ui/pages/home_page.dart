@@ -148,8 +148,16 @@ class _HomePageState extends State<HomePage> {
                       context: context,
                       child: Column(
                         children: [
-                          const ListTile(
-                              leading: Icon(Icons.edit), title: Text("Editar")),
+                          ListTile(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => RecolectorPagState(
+                                            recolectorModel: r, isEdit: true)));
+                              },
+                              leading: const Icon(Icons.edit),
+                              title: const Text("Editar")),
                           ListTile(
                               onTap: () async {
                                 Navigator.pop(context);
@@ -231,7 +239,7 @@ class _HomePageState extends State<HomePage> {
           'Reuso',
           () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (_) => ReusoPage()));
+                context, MaterialPageRoute(builder: (_) => const ReusoPage()));
           },
         ),
         speedDialWidget(
