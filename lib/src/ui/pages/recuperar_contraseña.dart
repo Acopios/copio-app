@@ -35,10 +35,10 @@ class _RecuperarContraseniaState extends State<RecuperarContrasenia> {
         elevation: 8,
         title: const Text("Recuperar contraseña"),
       ),
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Padding(
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
                 children: [
@@ -99,8 +99,9 @@ class _RecuperarContraseniaState extends State<RecuperarContrasenia> {
                               context,
                               MaterialPageRoute(builder: (_) => LoginPage()),
                               (route) => false);
-                        }else{
-                          info(context, messageError, () => Navigator.pop(context));
+                        } else {
+                          info(context, messageError,
+                              () => Navigator.pop(context));
                         }
                       },
                       txt: "Cambiar",
@@ -111,9 +112,9 @@ class _RecuperarContraseniaState extends State<RecuperarContrasenia> {
                 ],
               ),
             ),
-            Visibility(visible: loading, child: const LoadingWidget())
-          ],
-        ),
+          ),
+          Visibility(visible: loading, child: const LoadingWidget())
+        ],
       ),
     ));
   }
