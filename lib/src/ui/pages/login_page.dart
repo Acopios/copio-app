@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
+
 import 'package:acopios/src/ui/blocs/login/login_cubit.dart';
 import 'package:acopios/src/ui/helpers/alert_dialog_helper.dart';
 import 'package:acopios/src/ui/pages/home_page.dart';
@@ -66,16 +68,16 @@ class _LoginPageState extends State<LoginPage> {
             _form(),
             _btn(),
             _space(30),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: ((_) => const Registerpage())));
-              },
-              child: const Text(
-                "Crear cuenta",
-                style: TextStyle(decoration: TextDecoration.underline),
-              ),
-            ),
+            // GestureDetector(
+            //   onTap: () {
+            //     Navigator.push(context,
+            //         MaterialPageRoute(builder: ((_) => const Registerpage())));
+            //   },
+            //   child: const Text(
+            //     "Crear cuenta",
+            //     style: TextStyle(decoration: TextDecoration.underline),
+            //   ),
+            // ),
           ],
         ),
       );
@@ -140,11 +142,21 @@ class _LoginPageState extends State<LoginPage> {
               action: () async {
                 if (state.enabled) {
                   final r = await _cubit.sendInfo();
-                  if (r) {
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (_) => const HomePage()),
-                        (route) => false);
+                  if (r.isNotEmpty) {
+                    if (r == "verificacion") {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => const RecuperarContrasenia(isVerification: true,)),
+                          (route) => false);
+                    } else if (r == "activo") {
+                      
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => const HomePage()),
+                          (route) => false);
+                    } else {
+                      log("-->");
+                    }
                   } else {
                     info(context, messageError, () => Navigator.pop(context));
                   }

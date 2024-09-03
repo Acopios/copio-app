@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:developer';
 
 import 'package:acopios/src/core/shared_preferences.dart';
 import 'package:acopios/src/data/dto/login_dto.dart';
@@ -26,10 +26,7 @@ class LoginCubit extends Cubit<LoginState> {
   ///-----------eventos-----------
 
   ///-----------peticiones-----------
-  Future<bool> sendInfo() async {
-
-        final String hashed = BCrypt.hashpw(password.text, BCrypt.gensalt());
-
+  Future<String> sendInfo() async {
     final r = await _repoLogin
         .login(LoginDto(usuario: user.text, contrasenia: password.text));
     if (r.success!) {
@@ -37,7 +34,7 @@ class LoginCubit extends Cubit<LoginState> {
       SharedPreferencesManager("id")
           .save(r.body!.usuario!.idUsuario!.toString());
     }
-    return r.success!;
+    return r.success! ? r.body!.usuario!.estado! : "";
   }
 
   ///-----------validaciones-----------
@@ -57,13 +54,27 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<bool> recuperar(String txt1, String tx2) async {
-    String salt = BCrypt.gensalt(logRounds: 4,prefix: "\$2a",secureRandom: Random(4));
-
     return await _repoLogin.recuperar({
       "usuario": txt1,
       "contrasenia": BCrypt.hashpw(tx2, BCrypt.gensalt()),
       "fechaActualizacion": DateTime.now().toIso8601String()
     });
+  }
+
+  Future<bool> activar(String txt1, String tx2) async {
+
+log(tx2, name: "de");
+final has = BCrypt.hashpw(tx2, BCrypt.gensalt());
+    final r = await _repoLogin.activarUsuario({
+      "user": txt1,
+      "idUsuario":await SharedPreferencesManager("id").load(),
+      "passV": "",
+      "passN": has,
+      "fechaActualizacion": DateTime.now().toIso8601String()
+    });
+    await SharedPreferencesManager("id").remove();
+    await SharedPreferencesManager("token").remove();
+    return r ;
   }
 
   ///-----------otros-----------

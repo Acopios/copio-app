@@ -56,8 +56,8 @@ class Usuario {
         correo: json["correo"]??"",
         contrasenia: json["contrasenia"]??"",
         rol: json["rol"]??"",
-        fechaCreacion: json["fechaCreacion"],
-        fechaActualizacion: json["fechaActualizacion"],
+        fechaCreacion: json["fechaCreacion"]==null?DateTime.now():DateTime.parse(json["fechaCreacion"]),
+        fechaActualizacion: json["fechaActualizacion"]==null?DateTime.now():DateTime.parse(json["fechaActualizacion"]),
     );
 
  

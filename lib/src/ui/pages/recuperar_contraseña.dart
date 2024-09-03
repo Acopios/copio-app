@@ -10,7 +10,8 @@ import 'package:acopios/src/ui/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 
 class RecuperarContrasenia extends StatefulWidget {
-  const RecuperarContrasenia({super.key});
+  final bool isVerification;
+  const RecuperarContrasenia({super.key, this.isVerification = false});
 
   @override
   State<RecuperarContrasenia> createState() => _RecuperarContraseniaState();
@@ -33,7 +34,7 @@ class _RecuperarContraseniaState extends State<RecuperarContrasenia> {
         child: Scaffold(
       appBar: AppBar(
         elevation: 8,
-        title: const Text("Recuperar contraseña"),
+        title:  Text(widget.isVerification?"Activar usuario": "Recuperar contraseña"),
       ),
       body: Stack(
         children: [
@@ -43,6 +44,11 @@ class _RecuperarContraseniaState extends State<RecuperarContrasenia> {
               child: Column(
                 children: [
                   SizedBox(height: 30),
+                  Visibility(
+                    visible: widget.isVerification,
+                    child: Container(
+                      alignment: Alignment.centerLeft,
+                      child: const Text("Ingresa tu usuario asignado"))),
                   InputWidget(
                       controller: txt1,
                       hintText: "Usuario",
@@ -51,6 +57,9 @@ class _RecuperarContraseniaState extends State<RecuperarContrasenia> {
                         setState(() {});
                       }),
                   SizedBox(height: 20),
+                  Container(
+                      alignment: Alignment.centerLeft,
+                      child: const Text("Define tu nueva contraseña")),
                   InputWidget(
                       controller: txt2,
                       hintText: "Contraseña",
@@ -91,17 +100,32 @@ class _RecuperarContraseniaState extends State<RecuperarContrasenia> {
                         loading = true;
                         setState(() {});
 
-                        final r = await l.recuperar(txt1.text, txt2.text);
-                        loading = false;
-                        setState(() {});
-                        if (r) {
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(builder: (_) => LoginPage()),
-                              (route) => false);
+                        if (widget.isVerification) {
+                          final r = await l.activar(txt1.text, txt2.text);
+                          loading = false;
+                          setState(() {});
+                          if (r) {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (_) => LoginPage()),
+                                (route) => false);
+                          } else {
+                            info(context, messageError,
+                                () => Navigator.pop(context));
+                          }
                         } else {
-                          info(context, messageError,
-                              () => Navigator.pop(context));
+                          final r = await l.recuperar(txt1.text, txt2.text);
+                          loading = false;
+                          setState(() {});
+                          if (r) {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (_) => LoginPage()),
+                                (route) => false);
+                          } else {
+                            info(context, messageError,
+                                () => Navigator.pop(context));
+                          }
                         }
                       },
                       txt: "Cambiar",
